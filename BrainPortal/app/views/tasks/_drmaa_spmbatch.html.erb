@@ -1,0 +1,156 @@
+<!-- 
+   Partial to be rendered for DrmaaSpmbatch.rb
+-->
+
+<script language="JavaScript" type="text/javascript">
+<!--
+
+function insert_a_line(aForm, text, value)
+{
+	if(aForm.length == 0){
+	    var newOpt1 = new Option(text, value);
+	    aForm.options[0] = newOpt1;
+	    aForm.selectedIndex = 0;
+	}
+	else{
+        var newOpt = new Option(text, value);
+        aForm.options[aForm.length] = newOpt;
+	}
+}
+
+function removeABatch(aForm)
+{
+  var index = aForm.selectedIndex;
+  if (index != -1) {
+    for(i=aForm.length-1; i>=0; i--)
+    {
+      if(aForm.options[i].selected)
+      {
+        aForm.options[i] = null;
+      }
+    }
+    if (aForm.length > 0) {
+      aForm.selectedIndex = index == 0 ? 0 : index - 1;
+    }
+  }
+}
+
+function selectAllOptions(selection)
+{
+	for(i=0; selection.length; i++){
+	   var input = document.createElement("input");
+	   input.type = "hidden";
+	   input.name = "batch_files[" + i + "]";
+	   input.value = selection.options[i].value;
+       document.getElementById("spmbatch").appendChild(input);
+	}
+}
+
+//-->
+</script>
+
+<div class = "generalcontent">
+  <table class=userfiles>
+  <tr>
+  <td><h2>SPM Batch Task</h2></td>
+  </tr>
+  <tr>
+  <td align=left><%= render :partial => "spmbatch_howto_note"%></td>
+  </tr>
+  </table>
+  <div class = "generalbox">
+
+	<%
+	     form_tag('/tasks/create', :id => "spmbatch") do 
+	-%>
+
+	<%= hidden_field_tag :task, 'DrmaaSpmbatch' %>
+	<%= hidden_field_tag 'bourreau_id', params[:bourreau_id] %>
+	<% params[:file_ids].each do |id| %>
+	<%= hidden_field_tag 'file_ids[]',  id %>
+	<% end %>
+
+	<h3>Description (optional)</h3><BR>
+	<%=  text_area_tag :description, nil, :cols  => 40 %><br><br>
+
+	<!--      
+	   Render form fields here.
+	   Default arguments returned by DrmaaSpmbatch.get_default_args()
+	     are stored in the hash: default_args
+	-->
+	
+     <h3>Choose Batchs to submit</h3>
+	 <table class="userfiles">
+	 <tr>
+		<td></td>
+		<td></td>
+		<td><small>Execution from top to bottom</small></td>		
+	 </tr>
+	 <tr>
+	 <td>
+	 <select name="batchs_in" size="6" <%= options_for_select(default_args[:batch_files].map{|p| [p.name,p.id]})%>></select>
+	 </td>
+	 <td>
+	 <input type="button" value="=>" 
+	        onclick="index = this.form.batchs_in.selectedIndex;
+	                 insert_a_line(this.form.batchs_out, this.form.batchs_in.options[index].text,this.form.batchs_in.value );
+	                 removeABatch(this.form.batchs_in); " /><br/>	
+	 <input type="button" value="<="
+	        onclick="index = this.form.batchs_out.selectedIndex;
+	                 insert_a_line(this.form.batchs_in, this.form.batchs_out.options[index].text,this.form.batchs_out.value); 
+	                 removeABatch(this.form.batchs_out);" />
+	 </td>
+	 <td>	
+	 <select name="batchs_out" size ="6" MULTIPLE></select>
+     </td>
+     </tr>
+     </table> 
+	 <table class="userfiles">
+       <tr> 
+           <th>Control Options</th>
+       </tr>
+       <tr>
+         <td> 
+	       <table  border="0" class="userfiles">
+		         <td>
+			        <%= render :partial => "spmbatch_validate_note" %>
+	             </td>
+	             <td>
+	               <%= check_box_tag( 'noValidation', value = "1", checked = false) %>     
+	             </td>
+             </tr>
+             <tr>
+		         <td>
+                   <%= render :partial => "spmbatch_saveall_note" %>
+	             <td>
+	               <%= check_box_tag( 'saveAll', value = "1", checked = false) %>     
+	             </td>
+             </tr>
+           </table>
+         </td>
+       </tr>
+     </table>
+	<%= submit_tag 'Start Spmbatch' , :onclick => "selectAllOptions(this.form.batchs_out);" %><br><br><br>
+     <h3>Subjects found in dataset: <em><%= Userfile.find(default_args[:collection_id]).name %></em></h3>
+      <%= render :partial => "spmbatch_subjects_note" %>
+      <table>
+         <tr>
+           <th>Subjects name</th>
+           <th>Exclude?</th>
+           <th>Create Field Map?</th>
+           <th>Clean Up?</th>
+         </tr>
+         <% for file in default_args[:file_args] %>
+           <%= render :partial => 'spmbatch_subjects_from_col',  :locals  => {:file  => file} %>
+         <% end %>
+      </table>	
+	<%= submit_tag 'Start Spmbatch' , :onclick => "selectAllOptions(this.form.batchs_out);" %>
+    <br>
+    <br>
+
+	Save selections as defaults: <%= check_box_tag( :save_as_defaults, '1') %><br>
+	Save results to:
+	<%= select_tag "data_provider_id", options_for_select([["Data provider of input files", nil]] + data_providers.collect{ |p| [ p.name, p.id ] }, current_user.user_preference.data_provider_id) %><br>
+	<% end %>
+  </div>  <!-- End class="generalbox" -->
+</div>   <!-- End class="generalcontent" -->

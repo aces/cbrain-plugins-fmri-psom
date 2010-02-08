@@ -1,0 +1,64 @@
+<%
+#
+# CBRAIN Project
+#
+# $Id: _notes.html.erb 541 2009-10-05 21:27:37Z tsherif $
+#
+-%>
+  <div class="alone_per_line">
+    <%= 
+      link_to_function "(More info)", {:id  => 'show_subjects_info', :class  => 'action_link'} do |page|
+        page['infobox_subjects'].toggle
+        page['show_subjects_info'].hide
+        page['hide_subjects_info'].show
+        page['hide_subjects_info_bottom'].show
+
+      end
+     %>
+
+  </div>
+   
+   <div id="infobox_subjects" style="display:none" >
+      <small>
+	     <%= 
+	       link_to_function "Close this note", {:id  => 'hide_subjects_info', :style  => 'display:none', :class  => 'action_link'} do |page|
+	         page['infobox_subjects'].toggle
+	         page['show_subjects_info'].show
+	         page['hide_subjects_info'].hide
+	         page['hide_subjects_info_bottom'].hide	
+	       end
+	      %>       
+      </small><br>
+	  <strong>Exclude?</strong><br> 
+	  No action will be taking for the given subjects.<br>
+	  The subjects will be simply ignore during this Task.<p>
+      <strong>Create Fields Map?</strong><br> 
+	  Try to create Gradient Field Map during preprocessing<br>
+	  step. If 2 folders containing the name <em>gre_field_map</em><br>
+	  one with a phase map, the others containing 2 differents<br>
+	  echo times magnitude image. You may create field map<br>
+	  and try to correct the geometric distortion of EPI images<br>
+	  <small><em>Note: This function is suit only for the 3T trio at the UNF,<br> <%= link_to "leave a message",:controller => "messages", :action => :index %> to see how it could be implemented</em></small><p>
+	  <strong>Clean Up?</strong><small>(Recommended)</small><br>
+	  unchecked this options if you want to leave untouched<br>
+	  the subjects dataset before starting the process.<br>
+	  Useful if you have dependencies from others tasks or <br>
+	  simply need your batchs to be execute over the last execution<br>
+	  this options is faster.<br>   
+      Otherwise, keep it checked for remove any <strong>none</strong> dicom files<br>
+      from the dataset. That way, there is no posssible confusionµ<br>
+      between this task and spm_jobman.<p>
+	  <center>
+	  <small>
+	  <%= 
+	    link_to_function "Close this note", {:id  => 'hide_subjects_info_bottom', :style  => 'display:none', :class  => 'action_link'} do |page|
+	       page['infobox_subjects'].toggle
+	       page['show_subjects_info'].show
+	       page['hide_subjects_info'].hide
+	       page['hide_subjects_info_bottom'].hide	
+	     end
+	    %>
+	  </small>      
+	  </center>
+
+   </div> <!-- End class="infobox" -->

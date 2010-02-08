@@ -1,0 +1,42 @@
+<%
+#
+# CBRAIN Project
+#
+# $Id: _notes.html.erb 541 2009-10-05 21:27:37Z tsherif $
+#
+-%>
+  <div class="alone_per_line">
+    <%= 
+      link_to_function "Do not validate the dataset?:", {:id  => 'show_validate_info', :class  => 'action_link'} do |page|
+        page['infobox_validate'].toggle
+        page['show_validate_info'].hide
+        page['hide_validate_info'].show
+      end
+     %>
+
+  </div>
+  
+   <div id="infobox_validate" style="display:none" >
+
+      <h3>About not Validating the dataset?
+	<small> 
+     <%= 
+       link_to_function "Close this note", {:id  => 'hide_validate_info', :style  => 'display:none', :class  => 'action_link'} do |page|
+         page['infobox_validate'].toggle
+         page['show_validate_info'].show
+         page['hide_validate_info'].hide
+       end
+      %>
+     </small>
+     </h3>
+
+      Because <strong>SpmBatch</strong> is usually very time consuming,<br>
+      we recommend to leave this options unchecked.<p>
+
+      Validating the dataset may detect some inconsistency<br>
+      between subjects, like a misspell directory or an imaging<br>
+      file found missing at the very early stage of the tasks<p> 
+ 
+      So this options should be use carefully<br>
+
+   </div> <!-- End class="infobox" -->

@@ -1,0 +1,47 @@
+<%
+#
+# CBRAIN Project
+#
+# $Id: _notes.html.erb 541 2009-10-05 21:27:37Z tsherif $
+#
+-%>
+  <div class="alone_per_line">
+    <%= 
+      link_to_function "Save everything?:", {:id  => 'show_info', :class  => 'action_link'} do |page|
+        page['infobox_saveall'].toggle
+        page['show_info'].hide
+        page['hide_info'].show
+      end
+     %>
+
+  </div>
+   
+   <div id="infobox_saveall" style="display:none" >
+
+      <h3>Save everything options:      
+      <small>
+	     <%= 
+	       link_to_function "Close this note", {:id  => 'hide_info', :style  => 'display:none', :class  => 'action_link'} do |page|
+	         page['infobox_saveall'].toggle
+	         page['show_info'].show
+	         page['hide_info'].hide
+	       end
+	      %>       
+      </small>
+      </h3>
+      <strong>unchecked: Save important files only</strong><em>(faster)</em><br> 
+      This options return for each subjects any results<br>
+      produce by model estimation, reviews and estimation.<br> 
+      Also, modified batch should be found in the <strong>script</strong><br>
+	  directory and every logs produce during the process<br>
+	  will be available as output<p>
+	
+	  <strong>checked: Save everything</strong><br> 
+	  This options is similar to the previous one but also<br>
+	  include all the files that have been created during the<br>
+	  process<br>
+	  e.g.<em>preprocessing files, Field Map etc ...</em> 
+     <center>
+
+      </center>
+   </div> <!-- End class="infobox" -->
