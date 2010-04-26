@@ -5,7 +5,7 @@
 #
 # Original author: Mathieu Desrosiers
 #
-# $Id: drmaa_spmbatch.rb 590 2009-10-29 20:54:40Z desmat $
+# $Id$
 #
 
 

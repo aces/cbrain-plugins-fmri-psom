@@ -6,13 +6,13 @@
 #
 # Original author: 
 #
-# $Id: model.rb 700 2009-12-21 19:14:58Z tsherif $
+# $Id$
 #
 
 #A subclass of DrmaaTask to launch spmbatch.rb.
 class DrmaaSpmbatch < DrmaaTask
 
-  Revision_info="$Id: model.rb 700 2009-12-21 19:14:58Z tsherif $"
+  Revision_info="$Id$"
 
   def self.has_args?
     true
