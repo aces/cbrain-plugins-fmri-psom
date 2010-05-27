@@ -1,7 +1,8 @@
+
 #
 # CBRAIN Project
 #
-# DrmaaSpmbatch model as ActiveResource
+# CbrainTask model
 #
 # Original author: Mathieu Desrosiers
 #
@@ -10,13 +11,12 @@
 
 
 
-#A subclass of DrmaaTask to run bigseed.
-class DrmaaSpmbatch < DrmaaTask
+#A subclass of CbrainTask::ClusterTask to run bigseed.
+class CbrainTask::Spmbatch < CbrainTask::ClusterTask
 
   Revision_info="$Id$"
 
-  #See DrmaaTask.
-  def setup
+  def setup #:nodoc:
      params = self.params 
      command_args = " "
      subjects = params[:subjects]
@@ -63,7 +63,7 @@ class DrmaaSpmbatch < DrmaaTask
      true
   end
 
-  def drmaa_commands
+  def cluster_commands #:nodoc:
     params       = self.params
     command_args    = params[:command_args]
     subjects = params[:subjects]
@@ -81,8 +81,7 @@ class DrmaaSpmbatch < DrmaaTask
   
   end
   
-  #See DrmaaTask.
-  def save_results
+  def save_results #:nodoc:
     params       = self.params
     user_id      = self.user_id
     subjects = params[:subjects]

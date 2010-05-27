@@ -1,0 +1,12 @@
+
+<tr>
+
+<td>
+  <%= h(file[:name]) %>
+  <%= hidden_field_tag 'file_args[][name]'.to_la ,file[:name] %>
+</td>
+<td><%= check_box_tag 'file_args[][exclude]'.to_la ,    "exclude"    , file[:exclude]    %></td>
+<td><%= check_box_tag 'file_args[][doFieldMap]'.to_la , "doFieldMap" , file[:doFieldMap] %></td>
+<td><%= check_box_tag 'file_args[][doCleanUP]'.to_la ,  "doCleanUP"  , file[:doCleanUP]  %></td>
+
+</tr>
