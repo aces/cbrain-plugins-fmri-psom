@@ -106,7 +106,7 @@ function selectAllOptions(selection)
 		         <td>
                    <%= render :partial => "tasks/cbrain_task/spmbatch_saveall_note" %>
 	             <td>
-	               <%= check_box_tag( :saveAll.to_la, "1", params[:saveAll] ) %>     
+	               <%= check_box_tag( :save_all.to_la, "1", params[:save_all] ) %>     
 	             </td>
              </tr>
            </table>
@@ -114,12 +114,12 @@ function selectAllOptions(selection)
        </tr>
      </table>
 
-	<%= submit_tag 'Start Spmbatch' , :onclick => "selectAllOptions(this.form.batchs_out);" %><br><br><br>
+     <br>
 
      <h3>Subjects found in dataset: <em><%= Userfile.find(params[:collection_id]).name %></em></h3>
      <%= hidden_field_tag :collection_id.to_la, params[:collection_id] %>
 
-      <%= render :partial => "tasks/cbrain_task/spmbatch_subjects_note" %>
+     <%= render :partial => "tasks/cbrain_task/spmbatch_subjects_note" %>
 
       <table>
          <tr>
@@ -128,10 +128,16 @@ function selectAllOptions(selection)
            <th>Create Field Map?</th>
            <th>Clean Up?</th>
          </tr>
-         <% for file in params[:file_args] %>
-           <%= render :partial => 'tasks/cbrain_task/spmbatch_subjects_from_col',  :locals  => {:file  => file} %>
+         <% params[:file_args].values.each_with_index do |file,idx| %>
+           <%= render :partial => 'tasks/cbrain_task/spmbatch_subjects_from_col',  :locals  => {:idx => idx, :file => file} %>
          <% end %>
       </table>	
 
-      <%= submit_tag 'Start Spmbatch' , :onclick => "selectAllOptions(this.form.batchs_out);" %>
+      <center>
+      <% if @task.new_record? %>
+        <%= submit_tag 'Start Spmbatch',  :onclick => "selectAllOptions(this.form.batchs_out);" %>
+      <% else %>
+        <%= submit_tag 'Update Spmbatch', :onclick => "selectAllOptions(this.form.batchs_out);" %>
+      <% end %>
+      </center>
 
