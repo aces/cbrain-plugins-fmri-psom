@@ -1,0 +1,16 @@
+
+<STRONG>Input:</STRONG>
+<P>
+Collection:      <%= link_to_userfile_if_accessible params[:collection_id] %>
+Collection file: <% if params[:file_args] && params[:file_args]["0"] %>
+                   <%= h(params[:file_args]["0"][:name] || "Unknown?") %>
+                 <% else %>
+                   None
+                 <% end %>
+<P>
+<STRONG>Output:</STRONG>
+<P>
+SPMBatch result collection: <%= link_to_userfile_if_accessible params[:spmbatchresult_id] %>
+<P>
+See this task's <%= link_to "edit page", "/tasks/edit/#{task.id}" %> for more information.
+

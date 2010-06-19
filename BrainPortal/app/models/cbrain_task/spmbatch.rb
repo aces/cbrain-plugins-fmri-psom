@@ -72,6 +72,8 @@ class CbrainTask::Spmbatch < CbrainTask::PortalTask
 
     file_args.values.each do |file|
 
+      next if ! file[:exclude].blank?
+
       # Create the object
       spm8 = self.clone
       spm8.params[:file_args] = { "0" => file }
@@ -83,7 +85,7 @@ class CbrainTask::Spmbatch < CbrainTask::PortalTask
   end
 
   def untouchable_params_attributes #:nodoc:
-    { :file_args => true, :collection_id => true, :command_args => true }
+    { :file_args => true, :collection_id => true, :command_args => true, :batch_file_ids => true }
   end
 
 end

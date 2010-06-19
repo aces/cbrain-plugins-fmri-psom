@@ -40,9 +40,9 @@ function selectAllOptions(selection)
 	for(i=0; selection.length; i++){
 	   var input = document.createElement("input");
 	   input.type = "hidden";
-	   input.name = "batch_files[" + i + "]";
+	   input.name = "cbrain_task[params][batch_file_ids][" + i + "]";
 	   input.value = selection.options[i].value;
-           document.getElementById("spmbatch").appendChild(input);
+           document.getElementById("spmbatch_created_inputs").appendChild(input);
 	}
 }
 
@@ -140,4 +140,6 @@ function selectAllOptions(selection)
         <%= submit_tag 'Update Spmbatch', :onclick => "selectAllOptions(this.form.batchs_out);" %>
       <% end %>
       </center>
+
+      <div id="spmbatch_created_inputs"></div>
 
