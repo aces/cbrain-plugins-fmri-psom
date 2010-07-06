@@ -9,8 +9,8 @@
 # $Id$
 #
 
-#A subclass of CbrainTask::PortalTask to launch spmbatch.rb.
-class CbrainTask::Spmbatch < CbrainTask::PortalTask
+#A subclass of PortalTask to launch spmbatch.rb.
+class CbrainTask::Spmbatch < PortalTask
 
   Revision_info="$Id$"
 
