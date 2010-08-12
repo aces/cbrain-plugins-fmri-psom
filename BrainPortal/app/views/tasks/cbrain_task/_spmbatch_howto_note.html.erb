@@ -24,40 +24,41 @@
       </small><br>
       <br>
 
-      Purpose:<br>
-      Execute a suite of spm_jobman for each subjects in a given dataset.<br>
-      spm_jobman require a Matlab script (.m or .mat) create by the tools<br>
-      SPM Batch Editor.<p>
+      <pre>
+      Purpose:
+      Execute a suite of spm_jobman for each subjects in a given dataset.
+      spm_jobman require a Matlab script (.m or .mat) create by the tools
+      SPM Batch Editor.
 
       AFFICHER PLUTOT UNE IMAGE QUI VAUT MILLE MOTS
-      A typical dataset for an fmri study should look like this<p>
-            study-->subjects1-->anatomicals    ->some dicom files<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<PRE>         </PRE>|-->gre_field_map<PRE> </PRE>->some dicom files<br>
-                 |           |-->fmri_session1 ->some dicom files<br>
-                 |           |-->fmri_session2 ->some dicom file<br>
+      A typical dataset for an fmri study should look like this
+            study--&gt;subjects1--&gt;anatomicals    -&gt;some dicom files
+                 |           |--&gt;gre_field_map -&gt;some dicom files
+                 |           |--&gt;fmri_session1 -&gt;some dicom files
+                 |           |--&gt;fmri_session2 -&gt;some dicom file
                  |           |   ...
-                 |           |-->onset_for_fmri.m <em>(optionnal)</em>
-                 |           ...<br>
-                 |<br>
-                 |-->subjects2-->anatomicals<br>
-                 |           |-->gre_field_map ->some dicom files<br>
-                 |           |-->fmri_session1 ->some dicom files<br>
-                 |           |-->fmri_session2 ->some dicom file<br>
+                 |           |--&gt;onset_for_fmri.m (optionnal)
+                 |           ...
+                 |
+                 |--&gt;subjects2--&gt;anatomicals
+                 |           |--&gt;gre_field_map -&gt;some dicom files
+                 |           |--&gt;fmri_session1 -&gt;some dicom files
+                 |           |--&gt;fmri_session2 -&gt;some dicom file
                  |           |   ... 
-                 |           |-->onset_for_fmri.m <em>(optionnal)</em>
-                 |           |...<br>
-                 |--> ...<br>
-                 | ...<br><br>
+                 |           |--&gt;onset_for_fmri.m (optionnal)&gt;
+                 |           |...
+                 |--&gt; ...
+                 | ...
 
 
-      Note: the name of anatomical and fmri directories between eachs subjects<br>
-      involved in the analysis should all have at least the same name and most<br>
-      of the time the same number of files inside<p>
+      Note: the name of anatomical and fmri directories between eachs subjects
+      involved in the analysis should all have at least the same name and most
+      of the time the same number of files inside
 
-      SPM Batch pipeline will:<br>
-      1- Convert DICOM images into something SPM can use. (Two file (hdr+img) NIfTI)<br>
-      2- Create field maps and unwarping EPI if requested.<br>
-      3- Run from first to last a given matlab file list create by the tools SPM8 Batch Editor<br>
+      SPM Batch pipeline will:
+      1- Convert DICOM images into something SPM can use. (Two file (hdr+img) NIfTI)
+      2- Create field maps and unwarping EPI if requested.
+      3- Run from first to last a given matlab file list create by the tools SPM8 Batch Editor
          Note, Batch must have been save in text format (Matlab .m Script File)
       
       to do:
@@ -67,6 +68,8 @@
       4-implement validation
       5-doing group analysis
       6-event specification for events related fmri (onset.m)
+      </pre>
+
       <center>
       <small>
       <%= 
