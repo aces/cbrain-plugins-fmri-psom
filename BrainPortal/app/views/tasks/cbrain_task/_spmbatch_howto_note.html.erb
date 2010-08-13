@@ -1,86 +1,54 @@
+<div class="alone_per_line">
+  <%= show_hide_toggle "(howto)", "#infobox_howto", :alternate_text  => "Close this note", :class  => "action_link" %>
+</div>
+ 
+<div id="infobox_howto" style="display:none" >
+  <h2>How to use SPM Batch Task</h2>
 
-  <div class="alone_per_line">
-    <%= 
-      link_to_function "(howto)", {:id  => 'show_howto_info', :class  => 'action_link'} do |page|
-        page['infobox_howto'].toggle
-        page['show_howto_info'].hide
-        page['hide_howto_info'].show
-        page['hide_howto_info_bottom'].show
-      end
-     %>
-  </div>
-   
-   <div id="infobox_howto" style="display:none" >
-	  <h2>How to use SPM Batch Task</h2>
-      <small>
-             <%=
-               link_to_function "Close this note", {:id  => 'hide_howto_info', :style  => 'display:none', :class  => 'action_link'} do |page|
-                 page['infobox_howto'].toggle
-                 page['show_howto_info'].show
-                 page['hide_howto_info'].hide
-                 page['hide_howto_info_bottom'].hide
-               end
-              %>
-      </small><br>
-      <br>
+  <pre>
+    Purpose:
+    Execute a suite of spm_jobman for each subjects in a given dataset.
+    spm_jobman require a Matlab script (.m or .mat) create by the tools
+    SPM Batch Editor.
 
-      <pre>
-      Purpose:
-      Execute a suite of spm_jobman for each subjects in a given dataset.
-      spm_jobman require a Matlab script (.m or .mat) create by the tools
-      SPM Batch Editor.
-
-      AFFICHER PLUTOT UNE IMAGE QUI VAUT MILLE MOTS
-      A typical dataset for an fmri study should look like this
-            study--&gt;subjects1--&gt;anatomicals    -&gt;some dicom files
-                 |           |--&gt;gre_field_map -&gt;some dicom files
-                 |           |--&gt;fmri_session1 -&gt;some dicom files
-                 |           |--&gt;fmri_session2 -&gt;some dicom file
-                 |           |   ...
-                 |           |--&gt;onset_for_fmri.m (optionnal)
-                 |           ...
-                 |
-                 |--&gt;subjects2--&gt;anatomicals
-                 |           |--&gt;gre_field_map -&gt;some dicom files
-                 |           |--&gt;fmri_session1 -&gt;some dicom files
-                 |           |--&gt;fmri_session2 -&gt;some dicom file
-                 |           |   ... 
-                 |           |--&gt;onset_for_fmri.m (optionnal)&gt;
-                 |           |...
-                 |--&gt; ...
-                 | ...
+    AFFICHER PLUTOT UNE IMAGE QUI VAUT MILLE MOTS
+    A typical dataset for an fmri study should look like this
+          study--&gt;subjects1--&gt;anatomicals    -&gt;some dicom files
+               |           |--&gt;gre_field_map -&gt;some dicom files
+               |           |--&gt;fmri_session1 -&gt;some dicom files
+               |           |--&gt;fmri_session2 -&gt;some dicom file
+               |           |   ...
+               |           |--&gt;onset_for_fmri.m (optionnal)
+               |           ...
+               |
+               |--&gt;subjects2--&gt;anatomicals
+               |           |--&gt;gre_field_map -&gt;some dicom files
+               |           |--&gt;fmri_session1 -&gt;some dicom files
+               |           |--&gt;fmri_session2 -&gt;some dicom file
+               |           |   ... 
+               |           |--&gt;onset_for_fmri.m (optionnal)&gt;
+               |           |...
+               |--&gt; ...
+               | ...
 
 
-      Note: the name of anatomical and fmri directories between eachs subjects
-      involved in the analysis should all have at least the same name and most
-      of the time the same number of files inside
+    Note: the name of anatomical and fmri directories between eachs subjects
+    involved in the analysis should all have at least the same name and most
+    of the time the same number of files inside
 
-      SPM Batch pipeline will:
-      1- Convert DICOM images into something SPM can use. (Two file (hdr+img) NIfTI)
-      2- Create field maps and unwarping EPI if requested.
-      3- Run from first to last a given matlab file list create by the tools SPM8 Batch Editor
-         Note, Batch must have been save in text format (Matlab .m Script File)
-      
-      to do:
-      1-convert .mat into .m when it's possible
-      2- write back original path drive   
-      3- makeSpmBatch sould be improve
-      4-implement validation
-      5-doing group analysis
-      6-event specification for events related fmri (onset.m)
-      </pre>
+    SPM Batch pipeline will:
+    1- Convert DICOM images into something SPM can use. (Two file (hdr+img) NIfTI)
+    2- Create field maps and unwarping EPI if requested.
+    3- Run from first to last a given matlab file list create by the tools SPM8 Batch Editor
+       Note, Batch must have been save in text format (Matlab .m Script File)
+    
+    to do:
+    1-convert .mat into .m when it's possible
+    2- write back original path drive   
+    3- makeSpmBatch sould be improve
+    4-implement validation
+    5-doing group analysis
+    6-event specification for events related fmri (onset.m)
+  </pre>
 
-      <center>
-      <small>
-      <%= 
-         link_to_function "Close this note", {:id  => 'hide_howto_info_bottom', :style  => 'display:none', :class  => 'action_link'} do |page|
-	  page['infobox_howto'].toggle
-	  page['show_howto_info'].show
-	  page['hide_howto_info'].hide
-	  page['hide_howto_info_bottom'].hide	
-	  end
-      %>
-      </small>      
-      </center>
-
-   </div> <!-- End class="infobox" -->
+</div> <!-- End class="infobox" -->

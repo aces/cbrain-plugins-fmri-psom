@@ -1,36 +1,18 @@
-
-  <div class="alone_per_line">
-    <%= 
-      link_to_function "Do not validate the dataset?:", {:id  => 'show_validate_info', :class  => 'action_link'} do |page|
-        page['infobox_validate'].toggle
-        page['show_validate_info'].hide
-        page['hide_validate_info'].show
-      end
-     %>
-
-  </div>
+<div class="alone_per_line">
+  <%= show_hide_toggle "Do not validate the dataset?:", "#infobox_validate", :alternate_text  => "Close this note", :class  => "action_link" %>
+</div>
   
-   <div id="infobox_validate" style="display:none" >
+<div id="infobox_validate" style="display:none" >
 
-      <h3>About not Validating the dataset?
-	<small> 
-     <%= 
-       link_to_function "Close this note", {:id  => 'hide_validate_info', :style  => 'display:none', :class  => 'action_link'} do |page|
-         page['infobox_validate'].toggle
-         page['show_validate_info'].show
-         page['hide_validate_info'].hide
-       end
-      %>
-     </small>
-     </h3>
+   <h3>About not Validating the dataset?</h3>
 
-      Because <strong>SpmBatch</strong> is usually very time consuming,<br>
-      we recommend to leave this options unchecked.<p>
+   Because <strong>SpmBatch</strong> is usually very time consuming,<br>
+   we recommend to leave this options unchecked.<p>
 
-      Validating the dataset may detect some inconsistency<br>
-      between subjects, like a misspell directory or an imaging<br>
-      file found missing at the very early stage of the tasks<p> 
- 
-      So this options should be use carefully<br>
+   Validating the dataset may detect some inconsistency<br>
+   between subjects, like a misspell directory or an imaging<br>
+   file found missing at the very early stage of the tasks<p> 
 
-   </div> <!-- End class="infobox" -->
+   So this options should be use carefully<br>
+
+</div> <!-- End class="infobox" -->
