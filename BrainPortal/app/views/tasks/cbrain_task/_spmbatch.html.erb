@@ -1,4 +1,5 @@
 
+
 <script language="JavaScript" type="text/javascript">
 <!--
 
@@ -66,7 +67,8 @@ function selectAllOptions(selection)
 	 </tr>
 	 <tr>
 	 <td>
-	 <select name="batchs_in" size="6" <%= options_for_select(params[:batch_files].map{|p| [p.name,p.id]}) %>></select>
+	 <select name="batchs_in" size="6"><%= options_for_select(params[:batch_files].map{|p| [p.name,p.id]}) %>
+         </select>
 	 </td>
 	 <td>
 	 <input type="button" value="=>" 
