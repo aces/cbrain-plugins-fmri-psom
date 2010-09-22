@@ -87,7 +87,6 @@ class CbrainTask::Spmbatch < ClusterTask
   
   def save_results #:nodoc:
     params       = self.params
-    user_id      = self.user_id
     subjects     = params[:file_args]["0"] || params[:subjects]  # changed struct: NEW || OLD
     name = subjects[:name]
     save_all = ! params[:save_all]
@@ -102,13 +101,9 @@ class CbrainTask::Spmbatch < ClusterTask
     self.addlog("Task root directory: #{rootDir}")
 
     data_provider_id = params[:data_provider_id]  
-    self.addlog("user_id= #{user_id}")
     self.addlog("data_provider_id= #{data_provider_id}")
-    self.addlog("group_id= #{source_userfile.group_id}")    
     spmbatchresult = safe_userfile_find_or_new(FileCollection,
         :name             => name,
-        :user_id          => user_id,
-        :group_id         => source_userfile.group_id,
         :data_provider_id => data_provider_id,
         :task             => "SpmBatch"
     )
