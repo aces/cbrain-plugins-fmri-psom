@@ -1,0 +1,15 @@
+
+<p>
+This task encapsulate a PSOM job, which is just a single
+step in a larger PSOM pipeline.<br/> As such, there
+are no real parameters to see, aside from what's
+already in the description.
+</p>
+
+<STRONG>PSOM Job Name:</STRONG> <%= params[:psom_job_name] %><br/>
+<STRONG>PSOM Job ID:</STRONG> <%= params[:psom_job_id] %><br/>
+
+<p>
+<STRONG>Main task for the whole pipeline:</STRONG> <%= link_to_task_if_accessible(params[:psom_main_pipeline_tid] || task.share_wd_tid) %>
+</p>
+

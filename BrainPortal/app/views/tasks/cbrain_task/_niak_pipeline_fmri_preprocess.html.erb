@@ -1,0 +1,139 @@
+
+<h3>NIAK fMRI Preprocessing Pipeline</h3>
+
+<fieldset>
+  <legend>Input List</legend>
+
+  <% if @task.new_record? %>
+    A distinct copy of the pipeline will be started per <%= h(FmriStudy.pretty_type) %> in this list:
+  <% else %>
+    This pipeline is meant to run on this <%= h(FmriStudy.pretty_type) %>:
+  <% end %>
+  <ul>
+  <% params[:interface_userfile_ids].each do |id| %>
+    <% inobj = FmriStudy.find_by_id(id) %>
+    <li><%= link_to_userfile_if_accessible(inobj) %><%= " (#{inobj.class.pretty_type})" if inobj %></li>
+  <% end %>
+  </ul>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>Output Options</legend>
+ 
+  <%= form.params_label(:output_name, "Name of output:") %>
+  <%= form.params_text_field :output_name %>
+  <br/>
+  <%= form.params_label(:size_output, "Desired output:") %>
+  <%= form.params_select :size_output, [ 'all', 'quality_control' ] %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>
+    <%= form.params_label('slice_timing[flag_skip]', "Slice Timing") %>
+    <%= form.params_check_box 'slice_timing[flag_skip]', {}, "0", "1" %>
+  </legend>
+
+  <%= form.params_label('slice_timing[type_acquisition]', "Type of acquisition:") %>
+  <%= form.params_select 'slice_timing[type_acquisition]',
+   [ 'interleaved', 'interleaved ascending', 'interleaved descending',
+     'sequential', 'sequential ascending', 'sequential descending' ]
+  %>
+  <br/>
+  <%= form.params_label('slice_timing[type_scanner]', "Type of scanner:") %>
+  <%= form.params_text_field 'slice_timing[type_scanner]' %>
+  <br/>
+  <%= form.params_label('slice_timing[delay_in_tr]', "{delay_in_tr}") %>
+  <%= form.params_text_field 'slice_timing[delay_in_tr]', :size => 5 %>
+</fieldset>
+  
+
+
+<fieldset>
+  <legend>
+    <%= form.params_label('motion_correction[flag_skip]', "Motion Correction") %>
+    <%= form.params_check_box 'motion_correction[flag_skip]', {}, "0", "1" %>
+  </legend>
+
+  <%= form.params_label('motion_correction[suppress_vol]', "{suppress_vol}") %>
+  <%= form.params_text_field 'motion_correction[suppress_vol]', :size => 5 %>
+  <br/>
+  <%= form.params_label('motion_correction[session_ref]', "{session_ref}") %>
+  <%= form.params_text_field 'motion_correction[session_ref]' %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>T1 Preprocessing</legend>
+
+  <%= form.params_label('t1_preprocess[nu_correct][distance]', "{nu correct distance}") %>
+  <%= form.params_text_field 't1_preprocess[nu_correct][distance]', :size => 5 %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>Anat2Func</legend>
+
+  <%= form.params_label('anat2func[init]', "{init}") %>
+  <%= form.params_select 'anat2func[init]', [ 'identity', 'center' ] %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>Time Filter</legend>
+
+  <%= form.params_label('time_filter[init]', "{hp}") %>
+  <%= form.params_text_field 'time_filter[hp]', :size => 5 %>
+  <br/>
+  <%= form.params_label('time_filter[init]', "{lp}") %>
+  <%= form.params_text_field 'time_filter[lp]', :size => 5 %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>
+    <%= form.params_label('corsica[flag_skip]', "Corsica") %>
+    <%= form.params_check_box 'corsica[flag_skip]', {}, "0", "1" %>
+  </legend>
+
+  <%= form.params_label('corsica[sica][nb_comp]', "{sica nb_comp}") %>
+  <%= form.params_text_field 'corsica[sica][nb_comp]', :size => 5 %>
+  <br/>
+  <%= form.params_label('corsica[threshold]', "{threshold}") %>
+  <%= form.params_text_field 'corsica[threshold]', :size => 5 %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>
+    <%= form.params_label('resample_vol[flag_skip]', "Resample Volume") %>
+    <%= form.params_check_box 'resample_vol[flag_skip]', {}, "0", "1" %>
+  </legend>
+
+  <%= form.params_label('resample_vol[interpolation]', "{interpolation}") %>
+  <%= form.params_select 'resample_vol[interpolation]', [ 'sinc', 'tricubic' ]  %>
+  <br/>
+  <%= form.params_label('resample_vol[voxel_size]', "{voxel_size}") %>
+  <%= form.params_text_field 'resample_vol[voxel_size]', :size => 5 %>
+</fieldset>
+
+
+
+<fieldset>
+  <legend>
+    <%= form.params_label('smooth_vol[flag_skip]', "Smooth Volume") %>
+    <%= form.params_check_box 'smooth_vol[flag_skip]', {}, "0", "1" %>
+  </legend>
+
+  <%= form.params_label('smooth_vol[fwhm]', "{fwhm}") %>
+  <%= form.params_text_field 'smooth_vol[fwhm]', :size => 5 %>
+</fieldset>
+

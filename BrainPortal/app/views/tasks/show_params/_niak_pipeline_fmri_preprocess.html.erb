@@ -1,0 +1,15 @@
+
+<STRONG>Input:</STRONG>
+<P>
+<UL>
+<% params[:interface_userfile_ids].each do |id| %>
+  <% inobj = FmriStudy.find_by_id(id) %>
+  <LI><%= link_to_userfile_if_accessible(inobj) %><%= " (#{inobj.class.pretty_type})" if inobj %></LI>
+<% end %>
+</UL>
+
+<BR>
+<STRONG>Output:</STRONG>
+<P>
+Final file: <%= link_to_userfile_if_accessible params[:outfile_id] %>
+

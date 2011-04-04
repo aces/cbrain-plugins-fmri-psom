@@ -1,0 +1,91 @@
+<%
+   full_path = fmri_study.cache_full_path
+%>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE niak_pipeline_fmri_preprocess>
+<niak_pipeline_fmri_preprocess>
+
+  <!-- XML generated automatically by <%= self.class.to_s %> in <%= self.revision_info.svn_id_pretty_file_rev_author_date %> -->
+
+  <files_in>
+
+<%
+  fmri_study.list_subjects().each do |subject|
+    anat_paths = fmri_study.list_anat_files(:subjects => subject)
+%>
+    <subject>
+      <name>"<%= x(subject) %>"</name>
+      <anat>"<%= x("#{full_path}/#{anat_paths[0]}") %>"</anat>
+      <fmri>
+<%
+      sessions = fmri_study.list_sessions(:subjects => subject)
+      sessions.each_with_index do |session,session_number|
+        scan_paths = fmri_study.list_scan_files(:subjects => subject, :sessions => session)
+%>
+        <session>
+          <name>"<%= x(session) %>"</name>
+<%        scan_paths.each do |scan| %>
+          <path>"<%= x("#{full_path}/#{scan}") %>"</path>
+<%        end %>
+        </session>
+<%    end %>
+      </fmri>
+    </subject>
+<% end %>
+
+  </files_in>
+
+  <opt>
+    <folder_out>"<%= x("#{task.full_cluster_workdir}/psom_pipeline") %>"</folder_out>
+    <size_output>"<%= x(params[:size_output]) %>"</size_output><!-- 'all' or 'quality_control' -->
+
+    <slice_timing>
+      <type_acquisition>"<%= x(params[:slice_timing][:type_acquisition]) %>"</type_acquisition><!-- 'interleaved', 'interleaved ascending', 'interleaved descending', 'sequential', 'sequential ascending', 'sequential descending' -->
+      <type_scanner>"<%= x(params[:slice_timing][:type_scanner]) %>"</type_scanner><!-- 'Siemens' or anything else -->
+      <delay_in_tr><%= x(params[:slice_timing][:delay_in_tr]) %></delay_in_tr><!-- integer -->
+      <flag_skip><%= x(params[:slice_timing][:flag_skip]) %></flag_skip><!-- boolean -->
+    </slice_timing>
+
+    <motion_correction>
+      <suppress_vol><%= x(params[:motion_correction][:suppress_vol]) %></suppress_vol><!-- integer -->
+      <session_ref>"<%= x(params[:motion_correction][:session_ref]) %>"</session_ref><!-- session to refer to -->
+      <flag_skip><%= x(params[:motion_correction][:flag_skip]) %></flag_skip><!-- boolean -->
+    </motion_correction>
+
+    <t1_preprocess>
+      <nu_correct>
+        <distance><%= x(params[:t1_preprocess][:nu_correct][:distance]) %></distance><!-- 50 (3T), 200 (1.5T) -->
+      </nu_correct>
+    </t1_preprocess>
+
+    <anat2func>
+      <init>"<%= x(params[:anat2func][:init]) %>"</init><!-- 'identity' or 'center' -->
+    </anat2func>
+
+    <time_filter>
+      <hp><%= x(params[:time_filter][:hp]) %></hp><!-- float or '-Inf' -->
+      <lp><%= x(params[:time_filter][:lp]) %></lp><!-- float or 'Inf' -->
+    </time_filter>
+
+    <corsica>
+      <sica>
+        <nb_comp><%= x(params[:corsica][:sica][:nb_comp]) %></nb_comp><!-- integer -->
+      </sica><!-- integer -->
+      <threshold><%= x(params[:corsica][:threshold]) %></threshold><!-- float -->
+      <flag_skip><%= x(params[:corsica][:flag_skip]) %></flag_skip><!-- boolean -->
+    </corsica>
+
+    <resample_vol>
+      <interpolation>"<%= x(params[:resample_vol][:interpolation]) %>"</interpolation><!-- 'sinc' or 'tricubic' -->
+      <voxel_size><%= x(params[:resample_vol][:voxel_size]) %></voxel_size><!-- integer -->
+      <flag_skip><%= x(params[:resample_vol][:flag_skip]) %></flag_skip><!-- boolean -->
+    </resample_vol>
+
+    <smooth_vol>
+      <fwhm><%= x(params[:smooth_vol][:fwhm]) %></fwhm><!-- integer -->
+      <flag_skip><%= x(params[:smooth_vol][:flag_skip]) %></flag_skip><!-- boolean -->
+    </smooth_vol>
+
+  </opt>
+
+</niak_pipeline_fmri_preprocess>
