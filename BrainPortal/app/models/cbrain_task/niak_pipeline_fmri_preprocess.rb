@@ -107,7 +107,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
       params[:slice_timing][:type_acquisition] =~ /^(interleaved|interleaved ascending|interleaved descending|sequential|sequential ascending|sequential descending)$/
 
     params_errors.add('slice_timing[type_scanner]', "has invalid value.") unless
-      params[:slice_timing][:type_scanner] =~ /^[\w\s\.]$/
+      params[:slice_timing][:type_scanner] =~ /^[\w\s\.]*$/
 
     params_errors.add('slice_timing[delay_in_tr]', "has invalid value.") unless
       params[:slice_timing][:delay_in_tr] =~ /^\s*\d+\s*$/
