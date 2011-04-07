@@ -22,6 +22,12 @@ class CbrainTask::PsomSubtask < PortalTask
     { :cannot_be_edited => true }
   end
 
+  def pretty_name #:nodoc:
+    psom_name = (self.params || {})[:psom_job_name]
+    return self.name if psom_name.blank?
+    "PsomSubtask (#{psom_name})"
+  end
+
   def before_form #:nodoc:
     cb_error "This task cannot be launched using the CBRAIN interface. The admin must have forgotten to set the tool's category to 'background'." # should never occur
   end
