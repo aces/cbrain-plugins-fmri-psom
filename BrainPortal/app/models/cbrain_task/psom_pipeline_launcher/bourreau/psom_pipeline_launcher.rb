@@ -315,17 +315,17 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   #  * fmri_study is the input study object
   #
   # The default behavior is actually to try to find a file
-  # in the subdirectory named 'models/xml_templates_psom'
+  # in the subdirectory named 'models/cbrain_task/{underscored_class}/bourreau'
   # that has the same name as the class (underscored)
   # with a .xml.erb extension.
   def get_psom_launcher_template_xml
     plain_name = self.name.underscore
     base_name  = plain_name + ".xml.erb"
-    full_path  = "#{RAILS_ROOT}/app/models/cbrain_task/xml_templates_psom/#{base_name}"
+    full_path  = "#{RAILS_ROOT}/app/models/cbrain_task/#{plain_name}/bourreau/#{base_name}"
     if File.exists?(full_path)
       return File.read(full_path)
     end
-    cb_error "No XML template '#{base_name}' for class #{self.name}."
+    cb_error "XML template not found: '#{full_path}'"
   end
 
   # This method invokes whatever program is needed
