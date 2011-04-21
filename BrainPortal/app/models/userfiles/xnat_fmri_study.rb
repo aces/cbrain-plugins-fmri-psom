@@ -5,14 +5,14 @@
 # Study model based on the xnat.org structure
 # See http://www.xnat.org for more info.
 #
-# $Id: open_fmri_org_study.rb 1882 2011-04-04 20:39:22Z prioux $
+# $Id$
 #
 
 # This class represents a FileCollection meant to model a fMRI study
 # structured according to the conventions described by http://www.xnat.org .
 class XnatFmriStudy < FmriStudy
 
-  Revision_info="$Id: open_fmri_org_study.rb 1882 2011-04-04 20:39:22Z prioux $"
+  Revision_info="$Id$"
 
   def self.pretty_type #:nodoc:
       "xnat.org Study"
