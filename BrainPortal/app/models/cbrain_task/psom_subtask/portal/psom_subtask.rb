@@ -43,9 +43,11 @@ class CbrainTask::PsomSubtask < PortalTask
       :psom_pipe_desc_subdir  => true,
       :psom_job_script        => true,
       :psom_job_run_subdir    => true,
+      :psom_ordered_idx       => true,
       :psom_predecessor_tids  => true,
       :psom_successor_tids    => true,
-      :psom_main_pipeline_tid => true
+      :psom_main_pipeline_tid => true,
+      :psom_graph_keywords    => true
     }
   end
 

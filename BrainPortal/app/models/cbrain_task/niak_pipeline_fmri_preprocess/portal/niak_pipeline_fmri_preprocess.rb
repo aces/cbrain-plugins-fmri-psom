@@ -211,7 +211,13 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
   end
 
   def untouchable_params_attributes #:nodoc:
-    { :subtask_ids => true, :outfile_id => true }
+    super.merge( # maybe we'll create a psom_pipeline_launcher model on the portal side, one day
+      { 
+        :subtask_ids      => true,
+        :meta_subtask_ids => true,
+        :outfile_id       => true,
+      }
+    )
   end
 
 end

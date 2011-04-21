@@ -118,8 +118,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     # Remove redundant dependencies.
     # If A -> B, B -> C and A -> C, then A -> C is redundant.
-    # NYI
-    #remove_redundant_dependencies(job_id_to_predecessors,job_id_to_successors)
+    remove_redundant_dependencies(job_id_to_predecessors,job_id_to_successors)
 
     # -----------------------------------------------------------------
     # Create a topologically sorted array of jobs
@@ -218,6 +217,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
           :psom_pipe_desc_subdir  => pipe_desc_dir,  # rel path of file to run is psom_pipe_desc_subdir/job_file
           :psom_job_script        => job_file,
           :psom_job_run_subdir    => pipe_run_dir,    # work directory for subtask; shared by all, here.
+          :psom_ordered_idx       => job_idx,
           :psom_predecessor_tids  => [],
           :psom_successor_tids    => [],
           :psom_main_pipeline_tid => self.id # same as share_wd_tid
@@ -235,19 +235,13 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       predecessor_ids.each do |predecessor_id|
         prec_task = job_id_to_task[predecessor_id]
         cb_error "Can't find predecessor task '#{predecessor_id}' for '#{job_id}' ?!?" unless prec_task
-        subtask.add_prerequisites_for_setup(prec_task)
+        subtask.add_prerequisites_for_setup(prec_task, "Completed")
       end
 
       # Save it, in STANDBY state!
       # The tasks will be activated in cluster_commands().
       subtask.save!
       subtasks << subtask
-    end
-
-    # Add prerequisites such that OUR post processing occurs only when
-    # all subtasks are done.
-    subtasks.each do |subtask|
-      self.add_prerequisites_for_post_processing(subtask)
     end
 
     # Now that all the subtasks have IDs, adjust them to
@@ -259,12 +253,34 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       successor_ids   = job_id_to_successors[subtask_job_id]   || []
       subtask.params[:psom_predecessor_tids] = predecessor_ids.map { |jid| job_id_to_task[jid].id }
       subtask.params[:psom_successor_tids]   = successor_ids.map   { |jid| job_id_to_task[jid].id }
+      # Label the task with one or several graph node type keywords.
+      prec_size = subtask.params[:psom_predecessor_tids].size
+      succ_size = subtask.params[:psom_successor_tids].size
+      gkeywords = []
+      gkeywords << 'Initial'    if prec_size == 0
+      gkeywords << 'PrecSerial' if prec_size == 1
+      gkeywords << 'MultiPrec'  if prec_size  > 1
+      gkeywords << 'Final'      if succ_size == 0
+      gkeywords << 'SuccSerial' if succ_size == 1
+      gkeywords << 'MultiSucc'  if succ_size  > 1
+      subtask.params[:psom_graph_keywords] = gkeywords.join('-')
       subtask.save!
     end
 
-    # Record all the IDs of the subtasks.
-    params[:subtask_ids] = subtasks.map &:id
+    # Meta-graph: replace subtasks with a mixed set of Parallelizers,
+    # Serializer and subtasks.
+    metasubtasks = self.build_meta_graph_tasks(subtasks)
 
+    # Add prerequisites such that OUR post processing occurs only when
+    # all final subtasks are done.
+    subtasks.each do |subtask|
+      next unless subtask.params[:psom_graph_keywords] =~ /Final/
+      self.add_prerequisites_for_post_processing(subtask, "Completed")
+    end
+
+    # Record all the IDs of the subtasks.
+    params[:subtask_ids]      = subtasks.map &:id
+    params[:meta_subtask_ids] = metasubtasks.map &:id
     self.save
 
     return true
@@ -458,6 +474,139 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     false # Needs to be enabled in subclasses, if needed.
   end
 
+  # Returns a NEW set of subtasks that group
+  # together the original set.
+  def build_meta_graph_tasks(subtasks) #:nodoc:
+
+    by_id = subtasks.index_by &:id
+
+    new_subtasks         = [] # declared early so it can be used in method's rescue clause
+    fully_processed_tids = {} # PsomSubtask IDs only
+    parallel_group_size  = (self.tool_config && self.tool_config.ncpus && self.tool_config.ncpus > 1) ? self.tool_config.ncpus : 8
+
+    current_cut          = subtasks.select { |t| t.params[:psom_graph_keywords] =~ /Initial/ } # [t-1,t-2,t-3,t-4,t-5,t-6]
+
+    while current_cut.size > 0
+
+      # Extend the current cut to an array of single tasks plus Serializers for groups of serial tasks
+      serialized_cut = current_cut.map do |task|
+        self.serialize_task_at(task, by_id, fully_processed_tids) # [ S(t-1,t-2,t-3), t-4, S(t-5,t-6) ]
+      end 
+
+      # Create the parallelizers, and/or non-parallelized tasks too.
+      triplet = CbrainTask::Parallelizer.create_from_task_list( serialized_cut,
+                  :group_size               => parallel_group_size,
+                  # :subtask_start_state      => "Standby",
+                  # :parallelizer_start_state => "Standby",
+                  :parallelizer_level       => 0
+                ) do |paral, paral_subtasks|
+        psom_idx = paral_subtasks.map { |t| t.is_a?(CbrainTask::PsomSubtask) ? (t.params[:psom_ordered_idx]+1).to_s : t.description }
+        paral.description = psom_idx.join(" | ")
+        paral_subtasks.each do |t|
+          paral.rank  = t.rank      if t.rank  && t.rank  >= paral.rank
+          paral.level = t.level     if t.level && t.level >= paral.level
+        end
+        paral.save!
+      end
+      messages          = triplet[0] # ignored
+      parallelizer_list = triplet[1] # 0, 1 or many, each a P(S(),S(),t-n,S(),...)
+      normal_list       = triplet[2] # 0, 1 or many, each a t-n or a S(t-n,t-n,...)
+
+      new_subtasks += parallelizer_list
+      new_subtasks += normal_list
+
+      # Unblock all the serializers in the non-parallelized list
+      normal_list.each do |task|
+        next unless task.is_a?(CbrainTask::CbSerializer)
+        task.status = 'New'
+        task.save!
+      end
+
+      # Flatten current cut and mark all its tasks as procesed
+      psom_flat_list = serialized_cut.inject([]) do |flat,task|
+        flat << task                  if task.is_a?(CbrainTask::PsomSubtask)
+        flat += task.enabled_subtasks if task.is_a?(CbrainTask::CbSerializer)
+        flat
+      end
+      current_flat_ids = psom_flat_list.index_by &:id
+      psom_flat_list.each { |task| fully_processed_tids[task.id] = true }
+
+      # Compute next cut
+      next_cut_tasks_by_id = {}
+      psom_flat_list.each do |task|
+        succ_ids = task.params[:psom_successor_tids].each do |succ_id|
+          next if current_flat_ids[succ_id.to_i]
+          succ = by_id[succ_id.to_i]
+          succ_prec_ids = succ.params[:psom_predecessor_tids]
+          next unless succ_prec_ids.all? { |tid| fully_processed_tids[tid.to_i] }
+          next_cut_tasks_by_id[succ_id] ||= by_id[succ_id]
+        end
+      end
+      current_cut = next_cut_tasks_by_id.values
+
+    end
+    
+    return new_subtasks
+  rescue => ex
+    new_subtasks.each { |t| t.destroy rescue true }
+    raise ex
+  end
+
+  def serialize_task_at(task, by_id, fully_processed_tids) #:nodoc:
+    task_list  = [ task ]
+    serial_ids = { task.id => true }
+    serializer = nil # declared here for methods's rescue clause
+
+    while true
+      endoflist = task_list[-1]
+      prop      = endoflist.params[:psom_graph_keywords] || ""
+puts_cyan "EOL: #{endoflist.params[:psom_ordered_idx]+1} #{prop}"
+      break unless prop =~ /SuccSerial/
+      succids   = endoflist.params[:psom_successor_tids] # should have single entry in it
+      succid    = succids[0].to_i
+      succ      = by_id[succid]
+      succ_prec_ids = succ.params[:psom_predecessor_tids]
+puts_cyan " -> SUC: #{succ.params[:psom_ordered_idx]+1} #{succ_prec_ids.inspect}"
+      break unless succ_prec_ids.all? { |tid| serial_ids[tid.to_i] || fully_processed_tids[tid.to_i] }
+      task_list << succ
+      serial_ids[succ.id] = true
+    end
+
+puts_blue "Serialize: " + show_ids(task_list.map { |t| (t.params[:psom_ordered_idx]+1).to_s })
+    return task if task_list.size <= 1
+
+    triplet = CbrainTask::CbSerializer.create_from_task_list( task_list,
+                :group_size               => task_list.size,
+                # :subtask_start_state      => "Standby", # ok with 'New' at this level
+                :serializer_start_state   => "Standby",
+                :serializer_level         => 0
+              ) do |ser,ser_subtasks|
+        psom_idx = ser_subtasks.map { |t| (t.params[:psom_ordered_idx] + 1).to_s || t.id.to_s }.sort
+        ser.description = "(#{psom_idx.join("-")})"
+        ser_subtasks.each_with_index do |t,sidx|
+          ser.rank  = t.rank      if t.rank  && t.rank  >= ser.rank
+          ser.level = t.level     if t.level && t.level >= ser.level
+          t.remove_prerequisites_for_setup(ser_subtasks[sidx-1]) if sidx > 0 # TODO I don't like it: final and tricky
+          t.save!
+        end
+        ser.save!
+    end
+    messages        = triplet[0] # ignored
+    serializer_list = triplet[1] # we expect only one
+    normal_list     = triplet[2] # we expect none
+
+    cb_error "Internal error: didn't get a single CbSerializer?"    unless serializer_list.size == 1
+    cb_error "Internal error: got normal task afetr serialization?" unless normal_list.size     == 0
+
+    serializer = serializer_list[0]
+
+    return serializer
+  rescue => ex
+    if serializer
+      serializer.destroy rescue true
+    end
+    raise ex
+  end
 
 
   #--------------------------------------------------------------------
@@ -466,7 +615,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
   private
 
-  # Debug topological sort; pass it an ID, an array of IDs,
+  # Debug topological sort; pass it a job ID, an array of IDs,
   # an object that responds to ['id'] or an array of such objects.
   # Colorized the shortened IDs.
   def show_ids(idlist) #:nodoc:
@@ -474,6 +623,8 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
      res = ""
      idlist.each do |j|
        ji = j.is_a?(String) ? j : j['id']
+       ji = ji.to_s
+       ji = ("0" * (4-ji.size)) + ji if ji.size < 4
        p1 = ji[0,2]; p2 = ji[2,2]; name = p1+p2;
        v1 = 0; v2 = 0
        p1.each_byte { |x| v1 += x }
@@ -509,6 +660,26 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     dotout
   end
 
+  def remove_redundant_dependencies(before, after) #:nodoc:
+    all_ids = (before.keys + after.keys).uniq
+    all_ids.each do |job_id|
+      succ_ids = after[job_id] || []
+      redundant_succ_ids = {}
+      succ_ids.each do |succ_id|
+        other_succ_ids = succ_ids.reject { |i| i == succ_id }
+        if other_succ_ids.any? { |i| all_succ_ids(i, after)[succ_id] } # if true, job_id -> succ_id is redundant
+          redundant_succ_ids[succ_id] = true
+        end
+      end
+      succ_ids.reject! { |succ_id| redundant_succ_ids[succ_id] }
+      after[job_id] = succ_ids
+      redundant_succ_ids.keys.each do |succ_id|
+        bef_ids = before[succ_id].reject { |i| i == job_id }
+        before[succ_id] = bef_ids
+      end
+    end
+  end
+
   # Returns a graph of the PSOM jobs dependencies in DOT format
   # with redundant dependencies removed.
   #
@@ -516,7 +687,6 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   # remove_redundant_dependencies() is ever implemented and
   # used (see commented-out code above)
   def create_dot_graph_nr(ordered_jobs, id_to_prec, id_to_succ) #:nodoc:
-    id_to_all_succ_ids = {}
     dotout = "digraph #{self.name}_nr {\n"
     seen_job_ids = {}
     jobs_by_id   = ordered_jobs.index_by { |job| job['id'] }
@@ -551,7 +721,6 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     @_all_succ_ids[id] = union
     union
   end
-
 
 end
 
