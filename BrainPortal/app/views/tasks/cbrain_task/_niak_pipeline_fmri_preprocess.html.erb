@@ -27,6 +27,11 @@
   <br/>
   <%= form.params_label(:size_output, "Desired output:") %>
   <%= form.params_select :size_output, [ 'all', 'quality_control' ] %>
+  <br/>
+  <%= form.params_label(:generate_meta_graph, "Generate CBRAIN Parallelizers and Serializers too? ") %>
+  <%= form.params_check_box :generate_meta_graph, {}, "1", "0" %>
+  <br/>
+  <small>(This is an advanced option that should be turned off for debugging only)</small>
 </fieldset>
 
 

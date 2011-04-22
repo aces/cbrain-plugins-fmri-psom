@@ -269,7 +269,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     # Meta-graph: replace subtasks with a mixed set of Parallelizers,
     # Serializer and subtasks.
-    metasubtasks = self.build_meta_graph_tasks(subtasks)
+    metasubtasks = params[:generate_meta_graph] == "0" ? [] : self.build_meta_graph_tasks(subtasks)
 
     # Add prerequisites such that OUR post processing occurs only when
     # all final subtasks are done.
@@ -474,18 +474,33 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     false # Needs to be enabled in subclasses, if needed.
   end
 
+
+
+  #--------------------------------------------------------------------
+  # Graph Optimization Support Code
+  #--------------------------------------------------------------------
+
   # Returns a NEW set of subtasks that group
-  # together the original set.
+  # together (reduce) the original set. We serialize blocks
+  # of tasks that are linear and parallelize width-first
+  # the task graph. Returns the set of tasks that
+  # together implements the reduced graph.
   def build_meta_graph_tasks(subtasks) #:nodoc:
 
     by_id = subtasks.index_by &:id
 
     new_subtasks         = [] # declared early so it can be used in method's rescue clause
     fully_processed_tids = {} # PsomSubtask IDs only
-    parallel_group_size  = (self.tool_config && self.tool_config.ncpus && self.tool_config.ncpus > 1) ? self.tool_config.ncpus : 8
+    parallel_group_size  = (self.tool_config && self.tool_config.ncpus && self.tool_config.ncpus > 1) ? self.tool_config.ncpus : 2
 
     current_cut          = subtasks.select { |t| t.params[:psom_graph_keywords] =~ /Initial/ } # [t-1,t-2,t-3,t-4,t-5,t-6]
 
+    # The cut progresses through the graph width-first,
+    # starting at the inputs. Each cut is implemented by a set
+    # of Parallelizer task plus some leftover CbSerial or individual
+    # PsomTask. There are no prerequisites added to any of the
+    # new tasks in this meta graph, as the ones from the PsomSubtask
+    # are enough to enusre proper meta task ordering.
     while current_cut.size > 0
 
       # Extend the current cut to an array of single tasks plus Serializers for groups of serial tasks
@@ -503,11 +518,13 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         psom_idx = paral_subtasks.map { |t| t.is_a?(CbrainTask::PsomSubtask) ? (t.params[:psom_ordered_idx]+1).to_s : t.description }
         paral.description = psom_idx.join(" | ")
         paral_subtasks.each do |t|
-          paral.rank  = t.rank      if t.rank  && t.rank  >= paral.rank
-          paral.level = t.level     if t.level && t.level >= paral.level
+          #paral.rank  = t.rank      if t.rank  >= paral.rank
+          paral.rank  = 0 # it looks better when they are all at the top of th batch
+          paral.level = t.level     if t.level >= paral.level
         end
         paral.save!
       end
+
       messages          = triplet[0] # ignored
       parallelizer_list = triplet[1] # 0, 1 or many, each a P(S(),S(),t-n,S(),...)
       normal_list       = triplet[2] # 0, 1 or many, each a t-n or a S(t-n,t-n,...)
@@ -522,7 +539,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         task.save!
       end
 
-      # Flatten current cut and mark all its tasks as procesed
+      # Flatten current cut and mark all its tasks as processed
       psom_flat_list = serialized_cut.inject([]) do |flat,task|
         flat << task                  if task.is_a?(CbrainTask::PsomSubtask)
         flat += task.enabled_subtasks if task.is_a?(CbrainTask::CbSerializer)
@@ -547,36 +564,47 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     end
     
     return new_subtasks
+
   rescue => ex
     new_subtasks.each { |t| t.destroy rescue true }
     raise ex
   end
 
+  # Starting with +task+, create and return a CbSerializer
+  # that will execute it and its direct serial followers.
+  # If +task+ is alone, return only +task+ itself. Whatever
+  # is returned is in Standby mode.
+  #
+  # As a side effect, when N subtasks are serialized, the
+  # subtasks numbered 1..N-1 (i.e. all but the first) are
+  # immediately setup and configured. This is unavoidable
+  # because otherwise their task prerequisites would prevent
+  # the whole thing from ever starting in the first place.
   def serialize_task_at(task, by_id, fully_processed_tids) #:nodoc:
     task_list  = [ task ]
     serial_ids = { task.id => true }
     serializer = nil # declared here for methods's rescue clause
 
+    # Find the longest line of tasks that are all chained together
     while true
       endoflist = task_list[-1]
       prop      = endoflist.params[:psom_graph_keywords] || ""
-puts_cyan "EOL: #{endoflist.params[:psom_ordered_idx]+1} #{prop}"
       break unless prop =~ /SuccSerial/
       succids   = endoflist.params[:psom_successor_tids] # should have single entry in it
       succid    = succids[0].to_i
       succ      = by_id[succid]
       succ_prec_ids = succ.params[:psom_predecessor_tids]
-puts_cyan " -> SUC: #{succ.params[:psom_ordered_idx]+1} #{succ_prec_ids.inspect}"
       break unless succ_prec_ids.all? { |tid| serial_ids[tid.to_i] || fully_processed_tids[tid.to_i] }
       task_list << succ
       serial_ids[succ.id] = true
     end
 
-puts_blue "Serialize: " + show_ids(task_list.map { |t| (t.params[:psom_ordered_idx]+1).to_s })
     return task if task_list.size <= 1
 
+    # Create a single CbSerializer task; the subtasks and
+    # the serializer itself are specially modified in the DO block.
     triplet = CbrainTask::CbSerializer.create_from_task_list( task_list,
-                :group_size               => task_list.size,
+                :group_size               => task_list.size, # all of them, no matter how many!
                 # :subtask_start_state      => "Standby", # ok with 'New' at this level
                 :serializer_start_state   => "Standby",
                 :serializer_level         => 0
@@ -584,10 +612,14 @@ puts_blue "Serialize: " + show_ids(task_list.map { |t| (t.params[:psom_ordered_i
         psom_idx = ser_subtasks.map { |t| (t.params[:psom_ordered_idx] + 1).to_s || t.id.to_s }.sort
         ser.description = "(#{psom_idx.join("-")})"
         ser_subtasks.each_with_index do |t,sidx|
-          ser.rank  = t.rank      if t.rank  && t.rank  >= ser.rank
-          ser.level = t.level     if t.level && t.level >= ser.level
-          t.remove_prerequisites_for_setup(ser_subtasks[sidx-1]) if sidx > 0 # TODO I don't like it: final and tricky
-          t.save!
+          #ser.rank  = t.rank      if t.rank  >= ser.rank
+          ser.rank  = 0 # it looks better when they are all at the top of th batc
+          ser.level = t.level     if t.level >= ser.level
+          if sidx > 0 # the first one must block in New, the others are set up
+            t.status = "Setting Up" # normally, the bourreau worker does this...
+            t.setup_and_submit_job  # ... and this too.
+            t.save!
+          end
         end
         ser.save!
     end
@@ -601,12 +633,14 @@ puts_blue "Serialize: " + show_ids(task_list.map { |t| (t.params[:psom_ordered_i
     serializer = serializer_list[0]
 
     return serializer
+
   rescue => ex
     if serializer
       serializer.destroy rescue true
     end
     raise ex
   end
+
 
 
   #--------------------------------------------------------------------

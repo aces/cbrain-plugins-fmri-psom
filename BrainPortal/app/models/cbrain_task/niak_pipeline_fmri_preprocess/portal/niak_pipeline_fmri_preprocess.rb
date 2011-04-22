@@ -17,7 +17,10 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
   end
 
   def self.default_launch_args #:nodoc:
+    super.merge( # one day may inherit from a general superclass for Psom pipelines
     {
+      :generate_meta_graph => "1",
+
       :output_name    => "",
       :size_output    => "quality_control",    # 'all' or 'quality_control'
 
@@ -68,7 +71,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
         :flag_skip => "0"
       }
 
-    }
+    })
   end
   
 
