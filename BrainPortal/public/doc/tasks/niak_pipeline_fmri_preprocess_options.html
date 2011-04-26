@@ -1,16 +1,67 @@
 
 <h1>Task options for NIAK's fMRI Preprocessing Pipeline</h1>
 
-<p class="short_paragraphs">
+<p class="medium_paragraphs">
 This task implements the fMRI preprocessing
 pipeline for NIAK. It consists of several steps
 implemented by jobs encapsulated by PsomSubtasks.
 </p>
 
-<b>Some Section</b>
-<ul>
-    <li><b>param1:</b> description 1.</li>
-    <li><b>param2:</b> description 2.</li>
-    <li><b>param3:</b> description 3.</li>
-</ul>
+<h3>Output Options</h3>
+
+<strong>Type of output</strong><br/>
+<p class="medium_paragraphs">
+'All' keeps all intermediate steps, as opposed 'Quality Control' which deletes most intermediate files created to reduce size.
+</p>
+
+<strong>Slice Timing</strong><br/>
+<p class="medium_paragraphs">
+Type of acquisition : Scanner acquisition type.<br/>
+Type of scanner : 'Siemens' scanners have a special slice acquisition.<br/>
+Delay in TR : Time between end of volume and start of next volume. Usually 0.
+</p>
+
+<strong>Motion Correction</strong><br/>
+<p class="medium_paragraphs">
+Suppress volumes : Deletes volumes at the beginning, like dummy scans.<br/>
+Session reference : Session used as a reference. Usually the session with acquisition of the T1 scan.
+</p>
+
+<strong>T1 Preprocessing</strong><br/>
+<p class="medium_paragraphs">
+Nu correct distance : Parameter for non-uniformity correction. 200 is a suggested value for 1.5T images, 50 for 3T images. If you find that this stage did not work well, this parameter is usually critical to improve the results.
+</p>
+
+<strong>Anat2Func</strong><br/>
+<p class="medium_paragraphs">
+Init : An initial guess of the transform. Possible values 'identity', 'center'. 'identity' is self-explanatory. The 'center' option usually does more harm than good. Use it only if you have very big misrealignement between the two images (say, &gt; 2 cm).
+</p>
+
+<strong>Time Filter</strong><br/>
+<p class="medium_paragraphs">
+High Pass : Cut-off frequency for high-pass filtering, or removal of low frequencies (in Hz). A cut-off of -Inf will result in no high-pass filtering.<br/>
+Low Pass : Cut-off frequency for low-pass filtering, or removal of high frequencies (in Hz). A cut-off of Inf will result in no low-pass filtering.
+</p>
+
+<strong>Corsica</strong><br/>
+<p class="medium_paragraphs">
+Number of components : Number of components estimated during the ICA. 20 is a minimal number, 60 was used in the validation of CORSICA.<br/>
+Threshold : Threshold to select noise-related compoenents (between 0 and 1). This threshold has been calibrated on a validation database to provide good sensitivity with excellent specificity.
+</p>
+
+<strong>Resample Volume</strong><br/>
+<p class="medium_paragraphs">
+Interpolation : The resampling scheme. The most accurate is 'sinc' but it is awfully slow. The fastest is 'trilinear'. <br/>
+Voxel Size : The voxel size to use in the stereotaxic space. Number is length of one side of cube.
+</p>
+
+<strong>Smooth Volume</strong><br/>
+<p class="medium_paragraphs">
+FWHM : Field width at half maximum of the bluring kernel.
+</p>
+
+
+<h3>For more information</h3>
+
+Visit the <A HREF="http://www.nitrc.org/plugins/mwiki/index.php/niak:FmriPreprocessing">NIAK Wiki</A>
 
