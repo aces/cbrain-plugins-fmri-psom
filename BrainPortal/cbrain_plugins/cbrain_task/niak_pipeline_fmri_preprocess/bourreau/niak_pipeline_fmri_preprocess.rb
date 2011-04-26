@@ -8,6 +8,9 @@
 #
 
 # A subclass of ClusterTask to run NiakPipelineFmriPreprocess.
+
+require_dependency "#{RAILS_ROOT}/cbrain_plugins/cbrain_task/psom_pipeline_launcher.rb"
+
 class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
 
   Revision_info="$Id$"
