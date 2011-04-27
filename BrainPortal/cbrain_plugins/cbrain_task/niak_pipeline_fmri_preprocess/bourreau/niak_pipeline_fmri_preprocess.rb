@@ -39,5 +39,9 @@ class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
     true
   end
 
+  def recover_from_post_processing_failure #:nodoc:
+    true
+  end
+
 end
 
