@@ -61,7 +61,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
       },
 
       :resample_vol => {
-        :interpolation => "tricubic", # 'sinc' or 'tricubic'
+        :interpolation => "trilinear", # 'trilinear', 'sinc' or 'tricubic'
         :voxel_size    => "3",
         :flag_skip     => "0"
       },
@@ -158,7 +158,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
 
     # -------------------------------------------------------------------
     params_errors.add('resample_vol[interpolation]', "has invalid value.") unless
-      params[:resample_vol][:interpolation] =~ /^(sinc|tricubic)$/
+      params[:resample_vol][:interpolation] =~ /^(sinc|trilinear|tricubic)$/
 
     params_errors.add('resample_vol[voxel_size]', "has invalid value.") unless
       params[:resample_vol][:voxel_size] =~ /^\s*\d+\s*$/
@@ -179,25 +179,25 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
 
       'slice_timing[type_acquisition]'        => "Type of acquisition",
       'slice_timing[type_scanner]'            => "Type of scanner",
-      'slice_timing[delay_in_tr]'             => "{delay_in_tr}",
+      'slice_timing[delay_in_tr]'             => "Delay in TR",
 
-      'motion_correction[suppress_vol]'       => "{suppres_vol}",
-      'motion_correction[session_ref]'        => "{session_ref}",
+      'motion_correction[suppress_vol]'       => "Suppress volumes",
+      'motion_correction[session_ref]'        => "Session reference",
 
       't1_preprocess[nu_correct][distance]'   => "nu_correct distance",
 
-      'anat2func[init]'                       => "{init}",
+      'anat2func[init]'                       => "Init",
 
-      'time_filter[hp]'                       => "{hp}",
-      'time_filter[lp]'                       => "{lp}",
+      'time_filter[hp]'                       => "High pass",
+      'time_filter[lp]'                       => "Low pass",
 
-      'corsica[sica][nb_comp]'                => "{Corsica sica nb_comp}",
-      'corsica[threshold]'                    => "{threshold}",
+      'corsica[sica][nb_comp]'                => "Number of components",
+      'corsica[threshold]'                    => "Threshold",
 
-      'resample_vol[interpolation]'           => "{interpolation}",
-      'resample_vol[voxel_size]'              => "{voxel_size}",
+      'resample_vol[interpolation]'           => "Interpolation",
+      'resample_vol[voxel_size]'              => "Voxel Size",
 
-      'smooth_vol[fwhm]'                      => "{fwhm}"
+      'smooth_vol[fwhm]'                      => "FWHM"
     }
   end
 
