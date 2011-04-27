@@ -335,9 +335,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   # that has the same name as the class (underscored)
   # with a .xml.erb extension.
   def get_psom_launcher_template_xml
-    plain_name = self.name.underscore
-    base_name  = plain_name + ".xml.erb"
-    full_path  = "#{RAILS_ROOT}/app/models/cbrain_task/#{plain_name}/bourreau/#{base_name}"
+    plain_name     = self.name.underscore
+    xml_base_name  = plain_name + ".xml.erb"
+    full_path      = "#{RAILS_ROOT}/cbrain_plugins/cbrain_task/#{plain_name}/bourreau/#{xml_base_name}"
     if File.exists?(full_path)
       return File.read(full_path)
     end
