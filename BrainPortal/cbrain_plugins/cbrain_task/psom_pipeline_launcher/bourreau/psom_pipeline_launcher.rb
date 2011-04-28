@@ -269,6 +269,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     # Meta-graph: replace subtasks with a mixed set of Parallelizers,
     # Serializer and subtasks.
+    self.save!
     metasubtasks = params[:generate_meta_graph] == "0" ? [] : self.build_meta_graph_tasks(subtasks)
 
     # Add prerequisites such that OUR post processing occurs only when
@@ -281,7 +282,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     # Record all the IDs of the subtasks.
     params[:subtask_ids]      = subtasks.map &:id
     params[:meta_subtask_ids] = metasubtasks.map &:id
-    self.save
+    self.save!
 
     return true
 
