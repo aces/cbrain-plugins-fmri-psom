@@ -52,7 +52,7 @@ function selectAllOptions(selection)
   <td><h2>SPM Batch Task</h2></td>
   </tr>
   <tr>
-  <td align=left><%= render :partial => "tasks/cbrain_task/spmbatch_howto_note" %></td>
+  <td align=left><%= render :partial => task_partial('spmbatch_howto_note') %></td>
   </tr>
   </table>
 
@@ -95,7 +95,7 @@ function selectAllOptions(selection)
          <td> 
 	       <table class="simple">
 		         <td>
-			        <%= render :partial => "tasks/cbrain_task/spmbatch_validate_note" %>
+			        <%= render :partial => task_partial('spmbatch_validate_note') %>
 	             </td>
 	             <td>
 	               <%= check_box_tag( :noValidation.to_la, "1", params[:noValidation] ) %>     
@@ -103,7 +103,7 @@ function selectAllOptions(selection)
              </tr>
              <tr>
 		         <td>
-                   <%= render :partial => "tasks/cbrain_task/spmbatch_saveall_note" %>
+                   <%= render :partial => task_partial('spmbatch_saveall_note') %>
 	             <td>
 	               <%= check_box_tag( :save_all.to_la, "1", params[:save_all] ) %>     
 	             </td>
@@ -118,7 +118,7 @@ function selectAllOptions(selection)
      <h3>Subjects found in dataset: <em><%= Userfile.find(params[:collection_id]).name %></em></h3>
      <%= hidden_field_tag :collection_id.to_la, params[:collection_id] %>
 
-     <%= render :partial => "tasks/cbrain_task/spmbatch_subjects_note" %>
+     <%= render :partial => task_partial('spmbatch_subjects_note') %>
 
       <table>
          <tr>
@@ -128,7 +128,7 @@ function selectAllOptions(selection)
            <th>Clean Up?</th>
          </tr>
          <% params[:file_args].values.each_with_index do |file,idx| %>
-           <%= render :partial => 'tasks/cbrain_task/spmbatch_subjects_from_col',  :locals  => {:idx => idx, :file => file} %>
+           <%= render :partial => task_partial('spmbatch_subjects_from_col'),  :locals  => {:idx => idx, :file => file} %>
          <% end %>
       </table>	
 
