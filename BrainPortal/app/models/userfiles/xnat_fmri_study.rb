@@ -69,7 +69,7 @@ class XnatFmriStudy < FmriStudy
   # but with one more option:
   #
   #   :scan_types => [ array of scan types ] # default: [ "fMRI" ]
-  def list_scan_files(options = {}) #:nodoc:
+  def list_scan_files(options = {})
     subs       = all_subjects
     filt_subs  = looked_for(options[:subjects])
     filt_sess  = looked_for(options[:sessions])
