@@ -25,6 +25,17 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       s.to_s.gsub(/&/, "&amp;").gsub(/\"/, "&quot;").gsub(/>/, "&gt;").gsub(/</, "&lt;").gsub(/'/,"&apos;")
     end
     alias x xml_escape #:nodoc:
+
+    # Transforms an identifier into a 'saner' one, that is, it must start
+    # with a letter and contain only letters, digits or _.
+    #
+    #   sane_id('ab_23')             => "ab_23"
+    #   sane_id('1234')              => "X_1234"
+    #   sane_id("+12-john_o'connor") => "X__12_john_o_connor"
+    def sane_id(s)
+      return s if s =~ /^[a-zA-Z]\w+$/
+      "X_#{s}".gsub(/\W/,"_")
+    end
   end
 
   # See CbrainTask.txt

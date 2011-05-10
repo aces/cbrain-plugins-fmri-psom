@@ -14,7 +14,7 @@
     anat_paths = fmri_study.list_anat_files(:subjects => subject)
 %>
     <subject>
-      <name>"<%= x(subject) %>"</name>
+      <name>"<%= x(sane_id(subject)) %>"</name>
       <anat>"<%= x("#{full_path}/#{anat_paths[0]}") %>"</anat>
       <fmri>
 <%
@@ -23,7 +23,7 @@
         scan_paths = fmri_study.list_scan_files(:subjects => subject, :sessions => session)
 %>
         <session>
-          <name>"<%= x(session) %>"</name>
+          <name>"<%= x(sane_id(session)) %>"</name>
 <%        scan_paths.each do |scan| %>
           <path>"<%= x("#{full_path}/#{scan}") %>"</path>
 <%        end %>
