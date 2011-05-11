@@ -278,10 +278,19 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       subtask.save!
     end
 
+    self.addlog("Created #{subtasks.size} PsomSubtasks")
+
     # Meta-graph: replace subtasks with a mixed set of Parallelizers,
     # Serializer and subtasks.
     self.save!
-    metasubtasks = params[:generate_meta_graph] == "0" ? [] : self.build_meta_graph_tasks(subtasks)
+    metasubtasks = []
+    if params[:generate_meta_graph] == "1"
+      metasubtasks,num_serializers_par = self.build_meta_graph_tasks(subtasks)
+      klass_cnt = metasubtasks.hashed_partitions { |t| t.name }
+      report    = klass_cnt.keys.sort.map { |s| "#{klass_cnt[s].size} x #{s}" }.join(", ")
+      ser_rep   = num_serializers_par > 0 ? ", with underneath #{num_serializers_par} x CbSerializer" : ""
+      self.addlog("Created MetaTask graph: #{report}#{ser_rep}")
+    end
 
     # Add prerequisites such that OUR post processing occurs only when
     # all final subtasks are done.
@@ -503,6 +512,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     new_subtasks         = [] # declared early so it can be used in method's rescue clause
     fully_processed_tids = {} # PsomSubtask IDs only
+    num_serializers_par  = 0  # number of CbSerializers under control of Parallelizers
     parallel_group_size  = (self.tool_config && self.tool_config.ncpus && self.tool_config.ncpus > 1) ? self.tool_config.ncpus : 2
 
     current_cut          = subtasks.select { |t| t.params[:psom_graph_keywords] =~ /Initial/ } # [t-1,t-2,t-3,t-4,t-5,t-6]
@@ -517,7 +527,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
       # Extend the current cut to an array of single tasks plus Serializers for groups of serial tasks
       serialized_cut = current_cut.map do |task|
-        self.serialize_task_at(task, by_id, fully_processed_tids) # [ S(t-1,t-2,t-3), t-4, S(t-5,t-6) ]
+        sertask = self.serialize_task_at(task, by_id, fully_processed_tids) # [ S(t-1,t-2,t-3), t-4, S(t-5,t-6) ]
+        num_serializers_par += 1 if sertask.is_a?(CbrainTask::CbSerializer) # may be adjusted by -1 below
+        sertask
       end 
 
       # Create the parallelizers, and/or non-parallelized tasks too.
@@ -543,6 +555,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
       new_subtasks += parallelizer_list
       new_subtasks += normal_list
+      normal_list.each { |t| num_serializers_par -= 1 if t.is_a?(CbrainTask::CbSerializer) } # there are not parallelized
 
       # Unblock all the serializers in the non-parallelized list
       normal_list.each do |task|
@@ -575,7 +588,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     end
     
-    return new_subtasks
+    return [ new_subtasks, num_serializers_par ]
 
   rescue => ex
     new_subtasks.each { |t| t.destroy rescue true }
