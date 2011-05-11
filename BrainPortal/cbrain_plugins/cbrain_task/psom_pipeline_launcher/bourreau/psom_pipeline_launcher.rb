@@ -46,7 +46,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     # Record code versions
     self.addlog_revinfo(CbrainTask::PsomPipelineLauncher)
-    self.addlog_revinfo(self)
+    svninfo_outerr = self.tool_config_system("svn info \"$PSOM_ROOT\" 2>&1")
+    psom_rev = svninfo_outerr[0] =~ /Revision:\s+(\d+)/ ? Regexp.last_match[1] : "???"
+    self.addlog("PSOM rev. #{psom_rev}")
 
     # Sync input data
     fmri_study = FmriStudy.find(params[:interface_userfile_ids][0])
