@@ -52,7 +52,9 @@ class CbrainTask::PsomSubtask < ClusterTask
       "echo 'PSOM Job Script:' #{job_script}",
       "echo 'PSOM Job Subdir:' #{job_subdir}",
       "cd '#{job_subdir}'",
-      "psom_octave_wrapper.sh $PSOM_ROOT/psom_run_job.sh '#{task_workdir}/#{script_relpath}'"
+      "SECONDS=0",
+      "psom_octave_wrapper.sh $PSOM_ROOT/psom_run_job.sh '#{task_workdir}/#{script_relpath}'",
+      "echo Completed in $SECONDS seconds."
     ]
   end
   
