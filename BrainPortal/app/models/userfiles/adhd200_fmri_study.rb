@@ -47,7 +47,7 @@ class Adhd200FmriStudy < FmriStudy
     results    = []
     subs.each do |sub|
       next if filt_subs.size > 0 && ! filt_subs[sub]
-      sesslist = list_sessions( :subject => sub )
+      sesslist = list_sessions( :subjects  => sub )
       sesslist = sesslist & filt_sess.keys if ! filt_sess.empty?
       next if sesslist.empty?
       sesslist.each do |session|
@@ -73,7 +73,7 @@ class Adhd200FmriStudy < FmriStudy
     results    = []
     subs.each do |sub|
       next if filt_subs.size > 0 && ! filt_subs[sub]
-      sesslist = list_sessions( :subject => sub )
+      sesslist = list_sessions( :subjects => sub )
       sesslist = sesslist & filt_sess.keys if ! filt_sess.empty?
       next if sesslist.empty?
       sesslist.each do |session|
