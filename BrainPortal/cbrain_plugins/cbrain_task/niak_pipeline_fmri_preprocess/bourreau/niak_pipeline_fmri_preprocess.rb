@@ -13,7 +13,7 @@ require_dependency "#{CBRAIN::TasksPlugins_Dir}/psom_pipeline_launcher.rb"
 
 class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def setup #:nodoc:
     svninfo_outerr = self.tool_config_system("svn info \"$NIAK_ROOT\" 2>&1")

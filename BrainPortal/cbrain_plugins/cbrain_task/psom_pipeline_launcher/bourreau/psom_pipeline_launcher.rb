@@ -12,13 +12,13 @@
 # subclassed for specific pipelines.
 class CbrainTask::PsomPipelineLauncher < ClusterTask
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   # Used internally by PsomPipelineLauncher to encapsulate the XML rendering
   # needed by the PSOM pipeline builder
   class PsomXmlEvaluator #:nodoc:
 
-    Revision_info="$Id$"
+    Revision_info=CbrainFileRevision[__FILE__]
 
     # Similar to the ERB:Util method for HTML, to allow escaping of XML text
     def xml_escape(s) #:nodoc:
@@ -360,7 +360,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   def get_psom_launcher_template_xml
     plain_name     = self.name.underscore
     xml_base_name  = plain_name + ".xml.erb"
-    full_path      = "#{RAILS_ROOT}/cbrain_plugins/cbrain_task/#{plain_name}/bourreau/#{xml_base_name}"
+    full_path      = "#{Rails.root.to_s}/cbrain_plugins/cbrain_task/#{plain_name}/bourreau/#{xml_base_name}"
     if File.exists?(full_path)
       return File.read(full_path)
     end

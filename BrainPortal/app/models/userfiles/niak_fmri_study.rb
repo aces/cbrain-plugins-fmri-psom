@@ -11,7 +11,7 @@
 # structured according to the conventions used by NIAK.
 class NiakFmriStudy < FmriStudy
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def self.pretty_type #:nodoc:
     "NIAK fMRI Study"

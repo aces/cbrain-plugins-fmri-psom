@@ -14,7 +14,7 @@
 #A subclass of ClusterTask to run bigseed.
 class CbrainTask::Spmbatch < ClusterTask
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   include RestartableTask # This task is naturally restartable
   include RecoverableTask # This task is naturally recoverable

@@ -10,7 +10,7 @@
 # A subclass of CbrainTask to launch NiakPipelineFmriPreprocess.
 class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def pretty_name #:nodoc:
     "NIAK fMRI Preprocessing"
