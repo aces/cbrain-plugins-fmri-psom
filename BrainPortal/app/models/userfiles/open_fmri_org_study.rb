@@ -12,7 +12,7 @@
 # structured according to the conventions described by openfmri.org .
 class OpenFmriOrgStudy < FmriStudy
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def self.pretty_type #:nodoc:
     "OpenfMRI.org Study"

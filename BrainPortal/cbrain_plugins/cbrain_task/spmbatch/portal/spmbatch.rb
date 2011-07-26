@@ -12,7 +12,7 @@
 #A subclass of PortalTask to launch spmbatch.rb.
 class CbrainTask::Spmbatch < PortalTask
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def self.properties #:nodoc:
     { :no_submit_button => true } # I create my own in my view.
