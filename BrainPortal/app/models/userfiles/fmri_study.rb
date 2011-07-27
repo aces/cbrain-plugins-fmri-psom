@@ -9,7 +9,7 @@
 # File structure details are to be defined precisely in subclasses.
 class FmriStudy < FileCollection
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def self.pretty_type #:nodoc:
     "fMRI Study"

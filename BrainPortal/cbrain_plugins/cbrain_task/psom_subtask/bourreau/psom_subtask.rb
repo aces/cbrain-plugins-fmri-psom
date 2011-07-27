@@ -12,7 +12,7 @@
 # A subclass of ClusterTask to run PsomSubtask.
 class CbrainTask::PsomSubtask < ClusterTask
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   include RestartableTask
   include RecoverableTask

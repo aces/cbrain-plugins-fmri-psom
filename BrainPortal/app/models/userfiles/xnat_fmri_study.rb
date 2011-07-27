@@ -12,7 +12,7 @@
 # structured according to the conventions described by http://www.xnat.org .
 class XnatFmriStudy < FmriStudy
 
-  Revision_info="$Id$"
+  Revision_info=CbrainFileRevision[__FILE__]
 
   def self.pretty_type #:nodoc:
       "xnat.org Study"
