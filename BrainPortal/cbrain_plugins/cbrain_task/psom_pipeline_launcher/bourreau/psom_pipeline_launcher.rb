@@ -543,6 +543,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
                 ) do |paral, paral_subtasks|
         psom_idx = paral_subtasks.map { |t| t.is_a?(CbrainTask::PsomSubtask) ? (t.params[:psom_ordered_idx]+1).to_s : t.description }
         paral.description = psom_idx.join(" | ")
+        paral.share_wd_tid = self.id # use the same workdir as the rest of the pipeline
         paral_subtasks.each do |t|
           #paral.rank  = t.rank      if t.rank  >= paral.rank
           paral.rank  = 0 # it looks better when they are all at the top of th batch
@@ -638,6 +639,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
               ) do |ser,ser_subtasks|
         psom_idx = ser_subtasks.map { |t| (t.params[:psom_ordered_idx] + 1).to_s || t.id.to_s }.sort
         ser.description = "(#{psom_idx.join("-")})"
+        ser.share_wd_tid = self.id # use the same workdir as the rest of the pipeline
         ser_subtasks.each_with_index do |t,sidx|
           #ser.rank  = t.rank      if t.rank  >= ser.rank
           ser.rank  = 0 # it looks better when they are all at the top of th batc
