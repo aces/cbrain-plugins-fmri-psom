@@ -59,7 +59,7 @@
   </files_in>
 
   <opt>
-    <folder_out>"<%= x("#{task.full_cluster_workdir}/psom_pipeline") %>"</folder_out>
+    <folder_out>"<%= x("#{task.full_cluster_workdir}/#{task.pipeline_run_dir}") %>"</folder_out>
     <size_output>"<%= x(params[:size_output]) %>"</size_output><!-- 'all' or 'quality_control' -->
 
     <slice_timing>
