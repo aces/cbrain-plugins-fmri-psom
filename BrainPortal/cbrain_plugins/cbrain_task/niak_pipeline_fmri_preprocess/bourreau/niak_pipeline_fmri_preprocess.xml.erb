@@ -1,26 +1,49 @@
-<%
-   full_path = fmri_study.cache_full_path
-%>
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE niak_pipeline_fmri_preprocess>
 <niak_pipeline_fmri_preprocess>
 
+<%
+   full_path   = fmri_study.cache_full_path
+   session_ref = params[:motion_correction][:session_ref]
+%>
   <!-- XML generated automatically by <%= self.class.to_s %> in <%= self.revision_info.svn_id_pretty_file_rev_author_date %> -->
 
   <files_in>
 
 <%
-  fmri_study.list_subjects().each do |subject|
+  subject_list = fmri_study.list_subjects()
+  raise "Error: no subjects found for fMRI study '#{fmri_study.name}' ?!?" if subject_list.blank?
+  subject_list.each do |subject|
     anat_paths = fmri_study.list_anat_files(:subjects => subject)
+    if anat_paths.blank?
+      task.addlog("Error: No anatomical scan files for subject '#{subject}' ?!? Skipping.")
+      next
+    end
+    sessions = fmri_study.list_sessions(:subjects => subject)
+    if sessions.blank?
+      task.addlog("Error: No sessions found for subject '#{subject}' ?!? Skipping.")
+      next
+    end
+    if ! sessions.include?( session_ref )
+      task.addlog("Error: Subject '#{subject}' does not contain a session ref '#{session_ref}' ?!? Skipping.")
+      next
+    end
+    unless sessions.detect { |s| ! fmri_study.list_scan_files(:subjects => subject, :sessions => s).blank? }
+      task.addlog("Error: No sessions of subject '#{subject}' contain any scan files ?!? Skipping.")
+      next
+    end
 %>
     <subject>
       <name>"<%= x(sane_id(subject)) %>"</name>
       <anat>"<%= x("#{full_path}/#{anat_paths[0]}") %>"</anat>
       <fmri>
 <%
-      sessions = fmri_study.list_sessions(:subjects => subject)
       sessions.each_with_index do |session,session_number|
         scan_paths = fmri_study.list_scan_files(:subjects => subject, :sessions => session)
+        if scan_paths.blank?
+          task.addlog("Session '#{session}' of subject '#{subject}' contain no scan files. Skipping.")
+          next
+        end
 %>
         <session>
           <name>"<%= x(sane_id(session)) %>"</name>
@@ -48,7 +71,7 @@
 
     <motion_correction>
       <suppress_vol><%= x(params[:motion_correction][:suppress_vol]) %></suppress_vol><!-- integer -->
-      <session_ref>"<%= x(params[:motion_correction][:session_ref]) %>"</session_ref><!-- session to refer to -->
+      <session_ref>"<%= x(session_ref) %>"</session_ref><!-- session to refer to -->
       <flag_skip><%= x(params[:motion_correction][:flag_skip]) %></flag_skip><!-- boolean -->
     </motion_correction>
 
