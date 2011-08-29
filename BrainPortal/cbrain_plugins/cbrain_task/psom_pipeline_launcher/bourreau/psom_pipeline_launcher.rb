@@ -79,16 +79,10 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     safe_mkdir(pipe_desc_dir)
     return false unless self.build_pipeline(launcher_xml_file, pipe_desc_dir)
 
-    # Detect situations of restarts (when params[:subtask_ids] already contains something).
-    subtask_ids = params[:subtask_ids] || []
-    if subtask_ids.size > 0 && self.run_number > 1
-      orig_subtasks = CbrainTask.find_all_by_id(subtask_ids) rescue []
-      if orig_subtasks.size == subtask_ids.size
-        self.addlog("Skipping setup of subtasks, as we are restarting everything.")
-        return true
-      end
-      self.addlog("Error trying to restart: it seems some of the subtasks we expected to find have ceased to exist.")
-      return false
+    # Detect situations of restarts (when subtasks already exists).
+    if self.run_number > 1 && self.psom_subtasks.count > 0
+      self.addlog("Skipping setup of subtasks, as we are restarting everything.")
+      return true
     end
 
     # -----------------------------------------------------------------
@@ -301,9 +295,6 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       self.add_prerequisites_for_post_processing(subtask, "Completed")
     end
 
-    # Record all the IDs of the subtasks.
-    params[:subtask_ids]      = subtasks.map &:id
-    params[:meta_subtask_ids] = metasubtasks.map &:id
     self.save!
 
     return true
@@ -321,14 +312,8 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   def cluster_commands #:nodoc:
     params       = self.params || {}
 
-    subtask_ids  = params[:subtask_ids] || []
-
     # Activate all the standby subtasks now
-    subtasks = CbrainTask.find_all_by_id(subtask_ids)
-    if subtasks.size != subtask_ids.size
-      cb_error "It seems some of the subtasks we are looking for have ceased to exist."
-    end
-    subtasks.each do |subtask|
+    self.psom_subtasks.all.each do |subtask|
       next unless subtask.status == "Standby" # in recover situations, they can be in other states.
       subtask.status = "New"
       subtask.save!
@@ -425,14 +410,14 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   def restart_at_setup #:nodoc:
     params       = self.params || {}
 
-    subtask_ids  = params[:subtask_ids] || []
-    subtasks     = CbrainTask.find_all_by_id_and_status(subtask_ids, "Completed") rescue []
-    if subtasks.size != subtask_ids.size
+    num_subtasks      = self.psom_subtasks.count
+    comp_subtasks     = self.psom_subtasks.where( :status => "Completed" ).all
+    if comp_subtasks.size != num_subtasks
       self.addlog("Cannot restart: cannot find all Completed subtasks we expected.")
       return false
     end
 
-    subtasks.each do |subtask|
+    comp_subtasks.each do |subtask|
       subtask.status = 'Standby'
       subtask.save
     end
@@ -463,19 +448,15 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     self.addlog("Cleaning up as part of recovery preparations")
 
-    subtask_ids  = params[:subtask_ids] || []
-    subtasks     = CbrainTask.find_all_by_id(subtask_ids) rescue []
-    subtasks.each do |subtask|
-      subtask.destroy rescue true
-    end
+    psom_subtasks.destroy_all
     
     pipe_run_dir  = self.pipeline_run_dir
     pipe_desc_dir = self.pipeline_desc_dir
     FileUtils.remove_dir(pipe_run_dir,  true) rescue true
     FileUtils.remove_dir(pipe_desc_dir, true) rescue true
 
-    params[:subtask_ids] = []
     self.prerequisites = {}
+    self.save
     true
   end
 
@@ -484,9 +465,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     self.addlog("Preparing to recover failed subtasks")
 
-    subtask_ids  = params[:subtask_ids] || []
-    subtasks     = CbrainTask.find_all_by_id(subtask_ids) rescue []
+    subtasks     = self.psom_subtasks.all
     subtasks.each do |subtask|
+      next unless subtask.status =~ /^Fail/
       subtask.recover
       subtask.save
     end
