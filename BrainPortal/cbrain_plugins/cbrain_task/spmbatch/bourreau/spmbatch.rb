@@ -40,7 +40,7 @@ class CbrainTask::Spmbatch < ClusterTask
        return false
      end
 
-     params[:data_provider_id] = collection.data_provider_id if params[:data_provider_id].blank?
+     self.results_data_provider_id ||= collection.data_provider_id
      
      collection.sync_to_cache
      self.addlog("Study full path: #{collection.cache_full_path.to_s}")
@@ -100,7 +100,7 @@ class CbrainTask::Spmbatch < ClusterTask
     rootDir = File.join(collection.cache_full_path.to_s,name)
     self.addlog("Task root directory: #{rootDir}")
 
-    data_provider_id = params[:data_provider_id]  
+    data_provider_id = self.results_data_provider_id
     self.addlog("data_provider_id= #{data_provider_id}")
     spmbatchresult = safe_userfile_find_or_new(FileCollection,
         :name             => name,

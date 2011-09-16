@@ -25,15 +25,14 @@ class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
   def save_results #:nodoc:
     params = self.params || {}
 
-    fmri_study = Userfile.find(params[:interface_userfile_ids][0]) rescue nil
-    dp_id      = params[:data_provider_id]
-    dp_id      = fmri_study.data_provider_id if dp_id.blank?
+    fmri_study = FmriStudy.find(params[:interface_userfile_ids][0]) rescue nil
+    self.results_data_provider_id ||= fmri_study.data_provider_id
 
     outfilename = params[:output_name]
     outfilename = "#{self.name}-P#{Process.pid}-T#{self.id}" if outfilename.blank? || ! Userfile.is_legal_filename?(outfilename)
     outfile = safe_userfile_find_or_new(FileCollection,
       :name             => outfilename,
-      :data_provider_id => dp_id
+      :data_provider_id => self.results_data_provider_id
     )
     outfile.save!
     outfile.cache_copy_from_local_file(self.pipeline_run_dir)
