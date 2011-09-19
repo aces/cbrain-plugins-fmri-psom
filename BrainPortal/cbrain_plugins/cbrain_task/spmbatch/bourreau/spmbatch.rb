@@ -104,8 +104,7 @@ class CbrainTask::Spmbatch < ClusterTask
     self.addlog("data_provider_id= #{data_provider_id}")
     spmbatchresult = safe_userfile_find_or_new(FileCollection,
         :name             => name,
-        :data_provider_id => data_provider_id,
-        :task             => "SpmBatch"
+        :data_provider_id => data_provider_id
     )
     
     self.addlog("spmbatchresult = #{spmbatchresult}")
