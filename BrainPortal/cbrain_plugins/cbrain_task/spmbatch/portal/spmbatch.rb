@@ -15,7 +15,10 @@ class CbrainTask::Spmbatch < PortalTask
   Revision_info=CbrainFileRevision[__FILE__]
 
   def self.properties #:nodoc:
-    { :no_submit_button => true } # I create my own in my view.
+    {
+      :no_submit_button => true, # I create my own in my view.
+      :cannot_be_edited => true
+    }
   end
 
   def before_form #:nodoc:
