@@ -626,7 +626,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
           ser.rank  = 0 # it looks better when they are all at the top of th batc
           ser.level = t.level     if t.level >= ser.level
           if sidx > 0 # the first one must block in New, the others are set up
-            t.status = "Setting Up" # normally, the bourreau worker does this...
+            t.status_transition!(t.status, "Setting Up") # normally, the bourreau worker does this...
             t.setup_and_submit_job  # ... and this too.
             t.save!
           end
