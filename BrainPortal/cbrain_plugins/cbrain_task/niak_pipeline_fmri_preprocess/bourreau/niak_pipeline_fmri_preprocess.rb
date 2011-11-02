@@ -16,7 +16,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
   Revision_info=CbrainFileRevision[__FILE__]
 
   def setup #:nodoc:
-    svninfo_outerr = self.tool_config_system("svn info \"$NIAK_ROOT\" 2>&1")
+    svninfo_outerr = self.tool_config_system("cd \"$NIAK_ROOT\" ; svn info 2>&1")
     niak_rev = svninfo_outerr[0] =~ /Revision:\s+(\d+)/ ? Regexp.last_match[1] : "???"
     self.addlog("NIAK svn rev. #{niak_rev}")
     super
