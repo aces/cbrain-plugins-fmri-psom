@@ -46,7 +46,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     # Record code versions
     self.addlog_revinfo(CbrainTask::PsomPipelineLauncher)
-    svninfo_outerr = self.tool_config_system("svn info \"$PSOM_ROOT\" 2>&1")
+    svninfo_outerr = self.tool_config_system("cd \"$PSOM_ROOT\" ; svn info . 2>&1")
     psom_rev = svninfo_outerr[0] =~ /Revision:\s+(\d+)/ ? Regexp.last_match[1] : "???"
     self.addlog("PSOM rev. #{psom_rev}")
 
