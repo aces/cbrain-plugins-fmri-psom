@@ -103,6 +103,10 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
     params_errors.add(:size_output, "has invalid value.") unless
       params[:size_output] =~ /^(all|quality_control)$/
 
+    if FmriStudy.find_all_by_id(params[:interface_usefile_ids]).any? { |u| u.name == params[:output_name] && u.data_provider_id == ( self.results_data_provider_id || u.data_provider_id) }
+      params_errors.add(:output_name, "is the same name of one of your input studies, and would crush it.")
+    end
+
 
 
     # -------------------------------------------------------------------
