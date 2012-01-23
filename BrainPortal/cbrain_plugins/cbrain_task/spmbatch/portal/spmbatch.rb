@@ -41,7 +41,7 @@ class CbrainTask::Spmbatch < PortalTask
     user             = self.user
 
     #Get the list of all available matlab Files
-    batch_files = Userfile.find_all_accessible_by_user(user, :conditions =>  ["(userfiles.name LIKE ?)", "%.m"])
+    batch_files = Userfile.find_all_accessible_by_user(user, :conditions =>  ["(userfiles.name LIKE ?)", "%.m"]).all
     unless batch_files && batch_files.size > 0
       cb_error "No SPM8 Batch found: Batch have to be a Matlab .m script file create by Batch Editor in SPM8"
     end
