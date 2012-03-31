@@ -36,7 +36,7 @@ class FmriStudy < FileCollection
   # Options:
   #   :sessions => [list of sessions]
   def list_subjects(options={})
-    cb_error "Method not implemented in subclass."
+    raise "Method not implemented in subclass."
   end
 
   # Returns a list of session names in the study.
@@ -45,7 +45,7 @@ class FmriStudy < FileCollection
   # Options:
   #   :subjects => [list of subjects]
   def list_sessions(options={})
-    cb_error "Method not implemented in subclass."
+    raise "Method not implemented in subclass."
   end
 
   # Anatomical files.
@@ -56,7 +56,7 @@ class FmriStudy < FileCollection
   #   :subjects => [list of subjects]
   #   :ext      => /regexp/ of file extensions
   def list_anat_files(options={})
-    cb_error "Method not implemented in subclass."
+    raise "Method not implemented in subclass."
   end
   
   # Scan files.
@@ -68,7 +68,7 @@ class FmriStudy < FileCollection
   #   :sessions => [list of sessions]
   #   :ext      => /regexp/ of file extensions
   def list_scan_files(options={})
-    cb_error "Method not implemented in subclass."
+    raise "Method not implemented in subclass."
   end
 
 end
