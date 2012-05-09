@@ -26,6 +26,8 @@ class FmriStudy < FileCollection
 
   Revision_info=CbrainFileRevision[__FILE__]
 
+  cbrain_abstract_model! # objects of this class are not to be instanciated
+
   def self.pretty_type #:nodoc:
     "fMRI Study"
   end
