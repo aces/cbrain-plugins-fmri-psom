@@ -114,9 +114,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     # Debug: create a DOT formated file of the job dependencies
     dotout = create_dot_graph(pipeline_struct);
     File.open("#{self.name.underscore}.dot","w") { |fh| fh.write(dotout) } # for debugging
-    dotfile = safe_userfile_find_or_create(DotGraphFile, :name => "#{self.name.underscore}-#{run_id}.dot")
+    dotfile = safe_userfile_find_or_new(DotGraphFile, :name => "#{self.name.underscore}-#{run_id}.dot")
     dotfile.cache_copy_from_local_file("#{self.name.underscore}.dot")
-    dotfile.addlog_to_userfiles_these_created_these( fmri_study, dotfile )
+    self.addlog_to_userfiles_these_created_these( fmri_study, dotfile )
     dotfile.move_to_child_of(fmri_study)
 
     # For each job, build lists of 'follower' and 'predecessor' jobs
@@ -206,9 +206,9 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     # this time with redundant edges removed.
     dotout_nr = create_dot_graph_nr(ordered_jobs, job_id_to_predecessors, job_id_to_successors)
     File.open("#{self.name.underscore}_nr.dot","w") { |fh| fh.write(dotout_nr) } # for debugging
-    dotfilenr = safe_userfile_find_or_create(DotGraphFile, :name => "#{self.name.underscore}_nr-#{run_id}.dot")
+    dotfilenr = safe_userfile_find_or_new(DotGraphFile, :name => "#{self.name.underscore}_nr-#{run_id}.dot")
     dotfilenr.cache_copy_from_local_file("#{self.name.underscore}_nr.dot")
-    dotfilenr.addlog_to_userfiles_these_created_these( fmri_study, dotfilenr )
+    self.addlog_to_userfiles_these_created_these( fmri_study, dotfilenr )
     dotfilenr.move_to_child_of(fmri_study)
 
     # -----------------------------------------------------------------
