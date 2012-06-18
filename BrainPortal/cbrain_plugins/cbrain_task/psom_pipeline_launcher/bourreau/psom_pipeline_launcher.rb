@@ -384,7 +384,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   def build_pipeline(xml_file, pipeline_dir)
     prog    = self.name.underscore
     # Note that 'psom_octave_wrapper.sh' is supplied in vendor/cbrain/bin on the Bourreau side
-    command = "psom_octave_wrapper.sh $PSOM_ROOT/#{prog} #{xml_file} #{pipeline_dir}"
+    command = "psom_octave_wrapper.sh $PSOM_ROOT/#{prog.to_s.bash_escape} #{xml_file.to_s.bash_escape} #{pipeline_dir.to_s.bash_escape}"
     self.addlog("Pipeline builder: #{command}")
     outs    = tool_config_system(command)
     stdout  = outs[0] ; stderr = outs[1]
