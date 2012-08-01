@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 #
 
+# Common code for psom_pipeline_launcher abstract task class
 class CbrainTask::PsomPipelineLauncher
 
   # Returns the PSOM subtasks.

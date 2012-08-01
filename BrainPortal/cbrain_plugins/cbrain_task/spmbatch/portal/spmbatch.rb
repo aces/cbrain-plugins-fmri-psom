@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 #
 
-#A subclass of PortalTask to launch spmbatch.rb.
+# A subclass of PortalTask to launch spmbatch.rb.
 class CbrainTask::Spmbatch < PortalTask
 
   Revision_info=CbrainFileRevision[__FILE__]
