@@ -20,9 +20,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 #
 
+# Common portal/bourreau code for NiakPipelineFmriPreprocess
 class CbrainTask::NiakPipelineFmriPreprocess
 
-  def self.pretty_type
+  def self.pretty_type #:nodoc:
     "NIAK fMRI Preprocessing Pipeline"
   end
 
