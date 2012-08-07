@@ -24,7 +24,7 @@
 # File structure details are to be defined precisely in subclasses.
 class FmriStudy < FileCollection
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   cbrain_abstract_model! # objects of this class are not to be instanciated
 
