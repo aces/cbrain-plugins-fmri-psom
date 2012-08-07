@@ -24,7 +24,7 @@
 # structured according to the conventions described by http://www.xnat.org .
 class XnatFmriStudy < FmriStudy
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.pretty_type #:nodoc:
       "xnat.org Study"

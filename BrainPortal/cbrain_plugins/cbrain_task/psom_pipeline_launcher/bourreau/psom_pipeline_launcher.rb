@@ -24,13 +24,13 @@
 # subclassed for specific pipelines.
 class CbrainTask::PsomPipelineLauncher < ClusterTask
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   # Used internally by PsomPipelineLauncher to encapsulate the XML rendering
   # needed by the PSOM pipeline builder
   class PsomXmlEvaluator #:nodoc:
 
-    Revision_info=CbrainFileRevision[__FILE__]
+    Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
     # Similar to the ERB:Util method for HTML, to allow escaping of XML text
     def xml_escape(s) #:nodoc:

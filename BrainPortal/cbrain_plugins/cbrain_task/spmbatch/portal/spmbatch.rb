@@ -23,7 +23,7 @@
 # A subclass of PortalTask to launch spmbatch.rb.
 class CbrainTask::Spmbatch < PortalTask
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.properties #:nodoc:
     {
