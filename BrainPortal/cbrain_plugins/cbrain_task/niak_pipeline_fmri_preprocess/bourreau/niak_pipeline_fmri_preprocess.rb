@@ -25,7 +25,7 @@ require_dependency "#{CBRAIN::TasksPlugins_Dir}/psom_pipeline_launcher.rb"
 # A subclass of PsomPipelineLauncher to run NiakPipelineFmriPreprocess.
 class CbrainTask::NiakPipelineFmriPreprocess < CbrainTask::PsomPipelineLauncher
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def setup #:nodoc:
     svninfo_outerr = self.tool_config_system("cd \"$NIAK_ROOT\" ; svn info 2>&1")

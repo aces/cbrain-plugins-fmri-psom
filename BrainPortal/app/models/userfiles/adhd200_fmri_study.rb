@@ -24,7 +24,7 @@
 # structured according to the conventions used by ADHD.
 class Adhd200FmriStudy < FmriStudy
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.pretty_type #:nodoc:
     "ADHD-200 fMRI Study"

@@ -24,7 +24,7 @@
 # structured according to the conventions described by openfmri.org .
 class OpenFmriOrgStudy < FmriStudy
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.pretty_type #:nodoc:
     "OpenfMRI.org Study"

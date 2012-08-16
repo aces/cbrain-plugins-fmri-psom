@@ -27,7 +27,7 @@
 # of CbrainTask::PsomPipelineLauncher (see BOURREAU side).
 class CbrainTask::PsomSubtask < PortalTask
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.properties #:nodoc:
     { :cannot_be_edited => true }

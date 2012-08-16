@@ -24,7 +24,7 @@
 # structured according to custom GOBS conventions.
 class GobsFmriStudy < FmriStudy
 
-  Revision_info=CbrainFileRevision[__FILE__]
+  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
   def self.pretty_type #:nodoc:
       "GOBS Study"
