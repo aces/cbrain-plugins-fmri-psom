@@ -89,7 +89,7 @@ class CbrainTask::Spmbatch < PortalTask
       next if ! file[:exclude].blank?
 
       # Create the object
-      spm8 = self.clone
+      spm8 = self.dup # not .clone, as of Rails 3.1.10
       spm8.params[:file_args] = { "0" => file }
 
       task_list << spm8

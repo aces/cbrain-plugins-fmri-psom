@@ -223,7 +223,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
     
     task_list = []
     file_ids.each do |id|
-      mj = self.clone
+      mj = self.dup # not .clone, as of Rails 3.1.10
       mj.params[:interface_userfile_ids] = [ id ]
       study_name = Userfile.find(id).name
       mj.description = mj.description.blank? ? study_name : mj.description.sub(/\s*$/,"") + "\n\n#{study_name}"
