@@ -130,7 +130,7 @@ class CbrainTask::NiakPipelineFmriPreprocess < PortalTask
       params[:slice_timing][:type_scanner] =~ /^[\w\s\.]*$/
 
     params_errors.add('slice_timing[delay_in_tr]', "has invalid value.") unless
-      params[:slice_timing][:delay_in_tr] =~ /^\s*\d+\s*$/
+      params[:slice_timing][:delay_in_tr] =~ /^\s*#{float_regex}\s*$/o
 
 
 

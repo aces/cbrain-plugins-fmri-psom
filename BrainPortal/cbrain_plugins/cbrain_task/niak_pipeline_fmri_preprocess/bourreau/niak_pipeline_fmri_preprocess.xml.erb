@@ -88,7 +88,7 @@
     <slice_timing>
       <type_acquisition>"<%= x(params[:slice_timing][:type_acquisition]) %>"</type_acquisition><!-- 'interleaved', 'interleaved ascending', 'interleaved descending', 'sequential', 'sequential ascending', 'sequential descending' -->
       <type_scanner>"<%= x(params[:slice_timing][:type_scanner]) %>"</type_scanner><!-- 'Siemens' or anything else -->
-      <delay_in_tr><%= x(params[:slice_timing][:delay_in_tr]) %></delay_in_tr><!-- integer -->
+      <delay_in_tr><%= x(params[:slice_timing][:delay_in_tr]) %></delay_in_tr><!-- float -->
       <flag_skip><%= x(params[:slice_timing][:flag_skip]) %></flag_skip><!-- boolean -->
     </slice_timing>
 
