@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 # A subclass of ClusterTask to run PsomSubtask.
@@ -28,16 +28,16 @@ class CbrainTask::PsomSubtask < ClusterTask
   include RestartableTask
   include RecoverableTask
 
-  # See CbrainTask.txt
   def setup #:nodoc:
     params         = self.params || {}
-    job_id         = params[:psom_job_id]
-    job_name       = params[:psom_job_name]
+
     job_script     = params[:psom_job_script]
-    #job_script = job_script.strip # TODO remove it's a PATCH
     job_subdir     = params[:psom_job_run_subdir]
     desc_dir       = params[:psom_pipe_desc_subdir]
     script_relpath = "#{desc_dir}/#{job_script}"
+    # job_script   = job_script.strip # TODO remove it's a PATCH
+    # job_id         = params[:psom_job_id]
+    # job_name       = params[:psom_job_name]
     cb_error "Cannot find the subdirectory '#{job_subdir}' we need for this job?" unless
       File.directory?(job_subdir)
     cb_error "Cannot find the PSOM script file '#{script_relpath}' we are expected to run?" unless
@@ -45,7 +45,6 @@ class CbrainTask::PsomSubtask < ClusterTask
     true
   end
 
-  # See CbrainTask.txt
   def cluster_commands #:nodoc:
     params         = self.params || {}
     job_id         = params[:psom_job_id]
@@ -68,10 +67,8 @@ class CbrainTask::PsomSubtask < ClusterTask
       "echo Completed in $SECONDS seconds."
     ]
   end
-  
-  # See CbrainTask.txt
+
   def save_results #:nodoc:
-    params       = self.params || {}
     stdoutfile   = self.stdout_cluster_filename
     if ! File.exist?(stdoutfile)
       self.addlog("Cannot find output of psom_run_job ?!?")

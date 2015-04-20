@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 # A subclass of ClusterTask to run a PSOM pipeline. Must be
@@ -50,16 +50,15 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     end
   end
 
-  # See CbrainTask.txt
   def setup #:nodoc:
-    params       = self.params || {}
+    params   = self.params || {}
 
     subtasks = [] # declared at beginning so it's seen by the method's rescue clause cleanup.
 
     # Record code versions
     self.addlog_revinfo(CbrainTask::PsomPipelineLauncher)
     svninfo_outerr = self.tool_config_system("cd \"$PSOM_ROOT\" ; svn info . 2>&1")
-    psom_rev = svninfo_outerr[0] =~ /Revision:\s+(\d+)/ ? Regexp.last_match[1] : "???"
+    psom_rev       = svninfo_outerr[0] =~ /Revision:\s+(\d+)/ ? Regexp.last_match[1] : "???"
     self.addlog("PSOM rev. #{psom_rev}")
 
     # Sync input data
@@ -104,7 +103,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     # IMPORTANT NOMENCLATURE NOTE: in this code,
     #  * the word 'job' is used to identify PSOM jobs
     #  * the word 'task' is used to identify CBRAIN tasks
-   
+
     self.addlog("Creating subtasks")
 
     # Extract the list of jobs and index it
@@ -199,7 +198,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     end
 
     # Check that all jobs in the initial list were reached and ordered.
-    missing_jobs = jobs.select { |job| ! seen_job_ids[job['id']] }
+    missing_jobs = jobs.select { |s_job| ! seen_job_ids[s_job['id']] }
     cb_error "The graph of jobs seems to contain #{missing_jobs.size} jobs unconnected to the rest of the graph?!?" if missing_jobs.size > 0
 
     # Debug 2: create a DOT formated file of the job dependencies,
@@ -219,10 +218,10 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     pipe_run_dir = self.pipeline_run_dir
     safe_mkdir(pipe_run_dir)
     job_id_to_task = {}
-    ordered_jobs.each_with_index do |job,job_idx|
-      job_id    = job['id']
-      job_name  = job['name']
-      job_file  = job['job_file']
+    ordered_jobs.each_with_index do |this_job,job_idx|
+      job_id    = this_job['id']
+      job_name  = this_job['name']
+      job_file  = this_job['job_file']
       job_level = job_id_to_level[job_id]
 
       # Create the task associated to one PSOM job
@@ -329,10 +328,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     raise ex
   end
 
-  # See CbrainTask.txt
   def cluster_commands #:nodoc:
-    params       = self.params || {}
-
     # Activate all the standby subtasks now
     self.psom_subtasks.all.each do |subtask|
       next unless subtask.status == "Standby" # in recover situations, they can be in other states.
@@ -342,10 +338,8 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     return nil # no cluster commands to run
   end
-  
-  # See CbrainTask.txt
+
   def save_results #:nodoc:
-    params       = self.params
     cb_error "The PSOM pipeline coder did not implement save_results in his subclass!?!"
   end
 
@@ -429,7 +423,6 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   #  - cluster_command() called:
   #     - subtasks changed to New
   def restart_at_setup #:nodoc:
-    params       = self.params || {}
 
     num_subtasks      = self.psom_subtasks.count
     comp_subtasks     = self.psom_subtasks.where( :status => "Completed" ).all
@@ -465,12 +458,11 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   #--------------------------------------------------------------------
 
   def recover_from_setup_failure #:nodoc:
-    params       = self.params || {}
 
     self.addlog("Cleaning up as part of recovery preparations")
 
     psom_subtasks.destroy_all
-    
+
     pipe_run_dir  = self.pipeline_run_dir
     pipe_desc_dir = self.pipeline_desc_dir
     FileUtils.remove_dir(pipe_run_dir,  true) rescue true
@@ -482,7 +474,6 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   end
 
   def recover_from_cluster_failure #:nodoc:
-    params       = self.params || {}
 
     self.addlog("Preparing to recover failed subtasks")
 
@@ -512,7 +503,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
   # together implements the reduced graph.
   def build_meta_graph_tasks(subtasks) #:nodoc:
 
-    by_id = subtasks.index_by &:id
+    by_id = subtasks.index_by(&:id)
 
     new_subtasks         = [] # declared early so it can be used in method's rescue clause
     fully_processed_tids = {} # PsomSubtask IDs only
@@ -534,7 +525,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         sertask = self.serialize_task_at(task, by_id, fully_processed_tids) # [ S(t-1,t-2,t-3), t-4, S(t-5,t-6) ]
         num_serializers_par += 1 if sertask.is_a?(CbrainTask::CbSerializer) # may be adjusted by -1 below
         sertask
-      end 
+      end
 
       # Create the parallelizers, and/or non-parallelized tasks too.
       triplet = CbrainTask::Parallelizer.create_from_task_list( serialized_cut,
@@ -554,7 +545,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         paral.save!
       end
 
-      messages          = triplet[0] # ignored
+      # messages        = triplet[0] # ignored
       parallelizer_list = triplet[1] # 0, 1 or many, each a P(S(),S(),t-n,S(),...)
       normal_list       = triplet[2] # 0, 1 or many, each a t-n or a S(t-n,t-n,...)
 
@@ -575,13 +566,13 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         flat += task.enabled_subtasks if task.is_a?(CbrainTask::CbSerializer)
         flat
       end
-      current_flat_ids = psom_flat_list.index_by &:id
+      current_flat_ids = psom_flat_list.index_by(&:id)
       psom_flat_list.each { |task| fully_processed_tids[task.id] = true }
 
       # Compute next cut
       next_cut_tasks_by_id = {}
       psom_flat_list.each do |task|
-        succ_ids = task.params[:psom_successor_tids].each do |succ_id|
+        task.params[:psom_successor_tids].each do |succ_id|
           next if current_flat_ids[succ_id.to_i]
           succ = by_id[succ_id.to_i]
           succ_prec_ids = succ.params[:psom_predecessor_tids]
@@ -592,7 +583,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
       current_cut = next_cut_tasks_by_id.values
 
     end
-    
+
     return [ new_subtasks, num_serializers_par ]
 
   rescue => ex
@@ -654,7 +645,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
         end
         ser.save!
     end
-    messages        = triplet[0] # ignored
+    # messages      = triplet[0] # ignored
     serializer_list = triplet[1] # we expect only one
     normal_list     = triplet[2] # we expect none
 
@@ -711,7 +702,7 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
 
     dotout = "digraph #{self.name} {\n"
     jobs.each do |job|
-      job_id       = job['id']
+      # job_id     = job['id']
       job_name     = job['name']
       dependencies = (job['dependencies'] || {})['dependency'] || []
       dependencies = [ dependencies] unless dependencies.is_a?(Array)
@@ -756,10 +747,10 @@ class CbrainTask::PsomPipelineLauncher < ClusterTask
     seen_job_ids = {}
     jobs_by_id   = ordered_jobs.index_by { |job| job['id'] }
     ordered_jobs.each do |job|
-      job_id       = job['id']
-      job_name     = job['name']
-      prec_ids     = id_to_prec[job_id] || []
-      succ_ids     = id_to_succ[job_id] || []
+      job_id               = job['id']
+      job_name             = job['name']
+      # prec_ids           = id_to_prec[job_id] || []
+      succ_ids             = id_to_succ[job_id] || []
       seen_job_ids[job_id] = true
       succ_ids.each do |succ_id|
         other_succ_ids = succ_ids.reject { |i| i == succ_id }

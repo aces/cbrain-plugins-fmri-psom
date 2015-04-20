@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 # This class represents a FileCollection meant to model a fMRI study
@@ -31,14 +31,14 @@ class GobsFmriStudy < FmriStudy
   end
 
   def list_subjects(options = {}) #:nodoc:
-    subs = all_subjects
+    return all_subjects
   end
-  
+
   private
-  
+
   def all_subjects #:nodoc:
     list_files(".", :directory).map {|e| Pathname.new(e.name).basename.to_s}
   end
-  
+
 end
 
