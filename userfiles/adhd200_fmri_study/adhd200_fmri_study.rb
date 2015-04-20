@@ -17,7 +17,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 # This class represents a FileCollection meant to model a fMRI study
@@ -56,7 +56,7 @@ class Adhd200FmriStudy < FmriStudy
     subs       = all_subjects
     filt_subs  = looked_for(options[:subjects])
     filt_sess  = looked_for(options[:sessions])
-    filt_state = looked_for(options[:states])
+    # filt_state = looked_for(options[:states])
     results    = []
     subs.each do |sub|
       next if filt_subs.size > 0 && ! filt_subs[sub]
