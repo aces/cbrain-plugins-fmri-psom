@@ -1,11 +1,11 @@
-v4.5.1 -#- 2016-12-19 15:47:43 -0500 -#- CBRAIN Team -#- __cbrain-plugins-fmri-psom_TAG__
-cfefbe68bcbfe53c7db3dc5bfecbdccb402b7f9c -#- 2016-09-15 10:46:39 -0400 -#- Pierre Rioux -#- __cbrain-plugins-fmri-psom_HEAD__
+v5.0.2 -#- 2018-03-09 11:56:43 -0500 -#- CBRAIN Team -#- __cbrain-plugins-fmri-psom_TAG__
+dd85e7efcad2221277b2889c1ab8851db586a6c9 -#- 2017-11-20 13:42:21 -0500 -#- Natacha Beck -#- __cbrain-plugins-fmri-psom_HEAD__
 8dbbeb1e3fc2c0554a483c425388a86740766c88 -#- 2015-04-01 11:48:20 -0400 -#- Natacha Beck -#- README.md
-3d54337cf5c23ea3b688fa45ab839968946fc9db -#- 2016-08-18 14:13:53 -0400 -#- Pierre Rioux -#- cbrain_file_revisions.csv
+1e5416e56fd9f5085866b3c6692cbaa5ae2f97a4 -#- 2016-12-19 16:01:36 -0500 -#- Pierre Rioux -#- cbrain_file_revisions.csv
 b33815b4fd4d8d2790585eb21b71f4bed0546a52 -#- 2015-01-13 14:32:17 -0500 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/bourreau/niak_pipeline_fmri_preprocess.rb
 cfefbe68bcbfe53c7db3dc5bfecbdccb402b7f9c -#- 2016-09-15 10:46:39 -0400 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/bourreau/niak_pipeline_fmri_preprocess.xml.erb
 b33815b4fd4d8d2790585eb21b71f4bed0546a52 -#- 2015-01-13 14:32:17 -0500 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/common/niak_pipeline_fmri_preprocess.rb
-b33815b4fd4d8d2790585eb21b71f4bed0546a52 -#- 2015-01-13 14:32:17 -0500 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/portal/niak_pipeline_fmri_preprocess.rb
+dd85e7efcad2221277b2889c1ab8851db586a6c9 -#- 2017-11-20 13:42:21 -0500 -#- Natacha Beck -#- cbrain_task/niak_pipeline_fmri_preprocess/portal/niak_pipeline_fmri_preprocess.rb
 2671d804425e45b8aac9ae5bb66fcb209d643ea6 -#- 2015-04-20 16:40:16 -0400 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/views/_show_params.html.erb
 b33815b4fd4d8d2790585eb21b71f4bed0546a52 -#- 2015-01-13 14:32:17 -0500 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/views/_task_params.html.erb
 b33815b4fd4d8d2790585eb21b71f4bed0546a52 -#- 2015-01-13 14:32:17 -0500 -#- Pierre Rioux -#- cbrain_task/niak_pipeline_fmri_preprocess/views/public/edit_params_help.html
